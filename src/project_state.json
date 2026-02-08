@@ -1,20 +1,20 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "CaricatureMe: a simplified MVP single-page web app (single index.html) that lets users sign up/login, enter job/appearance details, pay ~₹50 (mock or Razorpay), generate a caricature (placeholder initially), and download it, with a 4-page flow plus language and dark/light theme toggles.",
+  "projectStateVersion": 9,
+  "summary": "CaricatureMe: simplified MVP single-page web app (single index.html) that lets users sign up/login, upload a photo (file upload or camera capture) instead of entering detailed appearance text, pay ~₹50 (mock or Razorpay), generate a caricature (placeholder initially), and download it, with a 4-screen flow plus language and dark/light theme toggles.",
   "architectural_notes": [
     "MVP to be delivered as a single self-contained index.html with embedded CSS and inline JS; page navigation via show/hide (no frameworks/build tools).",
     "Use localStorage for users/session (demo authentication), plus storing theme, language, and payment state.",
     "Payments: support mock payment flow; optionally integrate Razorpay for INR payments.",
     "Caricature generation: start with placeholder image generation (Dicebear); later swap to real AI API using provided prompt template.",
     "Price display may use IP geolocation (ipapi.co) to choose currency and show fixed equivalent amounts.",
-    "UI change: do not show localized price on Landing; display price on Input & Payment screen before user clicks Generate/Pay. Use Landing space for imagery instead."
+    "UI change: do not show localized price on Landing; display price on Input & Payment screen before user clicks Generate/Pay. Use Landing space for imagery instead.",
+    "Input change: remove/replace the text-based Input Details form; collect a user photo via file upload and/or camera (getUserMedia) and keep the image data client-side (e.g., as a data URL or Blob) for the generation placeholder pipeline."
   ],
   "known_issues": [
     "Language requirements are inconsistent: spec lists 10 supported languages, but MVP deliverable/checklist calls for only 3 languages (English/Hindi/Spanish)."
   ],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Caricature-themed hero illustration banner (landing-hero.dim_1200x600.png)",
   "existing_features": [
     {
       "id": "feature-implement-a-single-page-app-flow-with-four-screens-landing-login-signup-input-payment-result-and-client-side-navigation-state-so-users-can-complete-the-full-journey-without-page-reloads",
@@ -143,6 +143,46 @@
         "REQ-18"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-remove-the-text-based-input-details-form-from-the-input-payment-screen-and-replace-it-with-a-photo-based-input-flow-that-lets-the-user-either-a-upload-an-image-from-their-device-or-b-capture-a-photo-using-the-device-camera-when-supported-by-the-browser",
+      "title": "Remove the text-based input details form from the Input & Payment screen and replace it with a photo-based input flow that lets the user either (a) upload an image from their device or (b) capture a photo using the device camera (when supported by the browser).",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-generation-data-model-and-local-persistence-so-that-a-selected-captured-photo-is-stored-as-the-primary-generation-input-for-the-current-attempt-and-ensure-attempt-state-is-cleared-appropriately-when-starting-over",
+      "title": "Update the generation data model and local persistence so that a selected/captured photo is stored as the primary generation input for the current attempt, and ensure attempt state is cleared appropriately when starting over.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-adjust-the-caricature-generation-flow-to-work-with-photo-input-after-successful-payment-trigger-generation-using-the-uploaded-captured-photo-as-the-source-input-while-keeping-the-existing-placeholder-generation-behavior-3-5-second-loading-simulation-and-placeholder-image-output-until-a-real-image-to-caricature-generator-is-implemented",
+      "title": "Adjust the caricature generation flow to work with photo input: after successful payment, trigger generation using the uploaded/captured photo as the source input, while keeping the existing placeholder generation behavior (3–5 second loading simulation and placeholder image output) until a real image-to-caricature generator is implemented.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-result-screen-ui-to-reflect-the-new-photo-based-input-remove-or-hide-the-now-obsolete-user-metadata-display-that-depends-on-name-job-art-style-and-optionally-show-a-small-thumbnail-preview-of-the-uploaded-captured-source-photo-if-available",
+      "title": "Update the Result screen UI to reflect the new photo-based input: remove (or hide) the now-obsolete user metadata display that depends on Name/Job/Art Style, and optionally show a small thumbnail/preview of the uploaded/captured source photo if available.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-any-new-user-facing-strings-needed-for-the-photo-upload-camera-capture-flow-to-the-i18n-system-without-modifying-existing-translation-values-for-current-keys-any-missing-translations-for-new-keys-should-fall-back-to-english",
+      "title": "Add any new user-facing strings needed for the photo upload/camera capture flow to the i18n system without modifying existing translation values for current keys; any missing translations for new keys should fall back to English.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -161,12 +201,6 @@
     {
       "id": "AR-3",
       "summary": "Email/password login + signup with Remember Me using localStorage (demo auth/session)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Input form: name, job/profession, appearance description (50–200 chars), and art style dropdown (Cartoon/Comic/Anime/Watercolor)",
       "reqIds": [],
       "status": "pending"
     },
@@ -232,6 +266,12 @@
       "reqIds": [
         "REQ-17"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Replace/remove the text-based Input Details form and instead add a photo upload or camera capture feature (upload from device or take a picture) as the main input before payment/generation",
+      "reqIds": [],
       "status": "pending"
     }
   ],

@@ -2,38 +2,102 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-localized-price-display-from-the-landing-screen-so-no-price-currency-amount-is-shown-on-the-landing-page",
-      "featureTitle": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
+      "featureId": "feature-remove-the-text-based-input-details-form-from-the-input-payment-screen-and-replace-it-with-a-photo-based-input-flow-that-lets-the-user-either-a-upload-an-image-from-their-device-or-b-capture-a-photo-using-the-device-camera-when-supported-by-the-browser",
+      "featureTitle": "Remove the text-based input details form from the Input & Payment screen and replace it with a photo-based input flow that lets the user either (a) upload an image from their device or (b) capture a photo using the device camera (when supported by the browser).",
       "files": [
-        "frontend/src/screens/LandingScreen.tsx"
+        "frontend/src/components/PhotoInput.tsx",
+        "frontend/src/screens/InputPaymentScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-16"
+        "REQ-19"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-replace-the-removed-landing-price-area-with-a-new-visually-appealing-static-image-on-the-landing-screen",
-      "featureTitle": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
+      "featureId": "feature-update-the-generation-data-model-and-local-persistence-so-that-a-selected-captured-photo-is-stored-as-the-primary-generation-input-for-the-current-attempt-and-ensure-attempt-state-is-cleared-appropriately-when-starting-over",
+      "featureTitle": "Update the generation data model and local persistence so that a selected/captured photo is stored as the primary generation input for the current attempt, and ensure attempt state is cleared appropriately when starting over.",
       "files": [
-        "frontend/src/screens/LandingScreen.tsx"
+        "frontend/src/features/generation/generationState.ts",
+        "frontend/src/features/generation/useCaricatureGeneration.ts",
+        "frontend/src/screens/ResultScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-18"
+        "REQ-20"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-adjust-the-caricature-generation-flow-to-work-with-photo-input-after-successful-payment-trigger-generation-using-the-uploaded-captured-photo-as-the-source-input-while-keeping-the-existing-placeholder-generation-behavior-3-5-second-loading-simulation-and-placeholder-image-output-until-a-real-image-to-caricature-generator-is-implemented",
+      "featureTitle": "Adjust the caricature generation flow to work with photo input: after successful payment, trigger generation using the uploaded/captured photo as the source input, while keeping the existing placeholder generation behavior (3–5 second loading simulation and placeholder image output) until a real image-to-caricature generator is implemented.",
+      "files": [
+        "frontend/src/features/generation/useCaricatureGeneration.ts",
+        "frontend/src/screens/InputPaymentScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-result-screen-ui-to-reflect-the-new-photo-based-input-remove-or-hide-the-now-obsolete-user-metadata-display-that-depends-on-name-job-art-style-and-optionally-show-a-small-thumbnail-preview-of-the-uploaded-captured-source-photo-if-available",
+      "featureTitle": "Update the Result screen UI to reflect the new photo-based input: remove (or hide) the now-obsolete user metadata display that depends on Name/Job/Art Style, and optionally show a small thumbnail/preview of the uploaded/captured source photo if available.",
+      "files": [
+        "frontend/src/screens/ResultScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-22"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-any-new-user-facing-strings-needed-for-the-photo-upload-camera-capture-flow-to-the-i18n-system-without-modifying-existing-translation-values-for-current-keys-any-missing-translations-for-new-keys-should-fall-back-to-english",
+      "featureTitle": "Add any new user-facing strings needed for the photo upload/camera capture flow to the i18n system without modifying existing translation values for current keys; any missing translations for new keys should fall back to English.",
+      "files": [
+        "frontend/src/features/i18n/i18n.ts",
+        "frontend/src/screens/InputPaymentScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-23"
       ],
       "confidence": "high"
     }

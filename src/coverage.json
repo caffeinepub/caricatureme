@@ -1,57 +1,96 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T11:06:49.523Z",
+  "generatedAt": "2026-02-08T11:15:51.793Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 5,
+    "implemented": 5,
     "items": [
       {
-        "id": "REQ-16",
-        "summary": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
+        "id": "REQ-19",
+        "summary": "Remove the text-based input details form from the Input & Payment screen and replace it with a photo-based input flow that lets the user either (a) upload an image from their device or (b) capture a photo using the device camera (when supported by the browser).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/screens/LandingScreen.tsx"
+          "frontend/src/screens/InputPaymentScreen.tsx",
+          "frontend/src/components/PhotoInput.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/screens/LandingScreen.tsx"
+          "frontend/src/screens/InputPaymentScreen.tsx",
+          "frontend/src/components/PhotoInput.tsx"
         ]
       },
       {
-        "id": "REQ-17",
-        "summary": "Ensure the localized price is displayed on the Input & Payment flow before caricature generation (i.e., on the Input & Payment screen prior to starting generation), using the existing regional pricing logic.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/screens/InputPaymentScreen.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-18",
-        "summary": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
+        "id": "REQ-20",
+        "summary": "Update the generation data model and local persistence so that a selected/captured photo is stored as the primary generation input for the current attempt, and ensure attempt state is cleared appropriately when starting over.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
-          "frontend/src/screens/LandingScreen.tsx"
+          "frontend/src/features/generation/generationState.ts",
+          "frontend/src/features/generation/useCaricatureGeneration.ts",
+          "frontend/src/screens/ResultScreen.tsx"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
-          "frontend/src/screens/LandingScreen.tsx"
+          "frontend/src/features/generation/generationState.ts",
+          "frontend/src/features/generation/useCaricatureGeneration.ts",
+          "frontend/src/screens/ResultScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-21",
+        "summary": "Adjust the caricature generation flow to work with photo input: after successful payment, trigger generation using the uploaded/captured photo as the source input, while keeping the existing placeholder generation behavior (3–5 second loading simulation and placeholder image output) until a real image-to-caricature generator is implemented.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/screens/InputPaymentScreen.tsx",
+          "frontend/src/features/generation/useCaricatureGeneration.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/screens/InputPaymentScreen.tsx",
+          "frontend/src/features/generation/useCaricatureGeneration.ts"
+        ]
+      },
+      {
+        "id": "REQ-22",
+        "summary": "Update the Result screen UI to reflect the new photo-based input: remove (or hide) the now-obsolete user metadata display that depends on Name/Job/Art Style, and optionally show a small thumbnail/preview of the uploaded/captured source photo if available.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/screens/ResultScreen.tsx",
+          "frontend/src/lib/downloadPng.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/screens/ResultScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-23",
+        "summary": "Add any new user-facing strings needed for the photo upload/camera capture flow to the i18n system without modifying existing translation values for current keys; any missing translations for new keys should fall back to English.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/i18n/i18n.ts",
+          "frontend/src/screens/InputPaymentScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/i18n/i18n.ts",
+          "frontend/src/screens/InputPaymentScreen.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
-    "frontend/src/screens/LandingScreen.tsx",
+    "frontend/src/camera/useCamera.ts",
+    "frontend/src/components/PhotoInput.tsx",
+    "frontend/src/features/generation/generationState.ts",
+    "frontend/src/features/generation/useCaricatureGeneration.ts",
+    "frontend/src/features/i18n/i18n.ts",
+    "frontend/src/screens/InputPaymentScreen.tsx",
+    "frontend/src/screens/ResultScreen.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { User, Briefcase, Palette, CreditCard, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CreditCard, Loader2 } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
+import PhotoInput from '../components/PhotoInput';
 import { useI18n } from '../features/i18n/useI18n';
 import { useRegionalPrice } from '../features/pricing/useRegionalPrice';
 import { useMockPayment } from '../features/payment/useMockPayment';
@@ -8,14 +9,6 @@ import { useCaricatureGeneration } from '../features/generation/useCaricatureGen
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { cardStyles, primaryButtonStyles, inputStyles, labelStyles } from '../lib/uiStyles';
 import { toast } from 'sonner';
 
@@ -23,29 +16,36 @@ interface InputPaymentScreenProps {
   onNavigate: () => void;
 }
 
-const ART_STYLES = ['Cartoon', 'Comic', 'Anime', 'Watercolor'];
-
 export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenProps) {
   const { t } = useI18n();
   const { priceDisplay } = useRegionalPrice();
   const { processPayment, isProcessing: isPaymentProcessing } = useMockPayment();
-  const { generate, isGenerating, error: generationError } = useCaricatureGeneration();
+  const { generate, isGenerating, error: generationError, getStoredInput } = useCaricatureGeneration();
 
-  const [name, setName] = useState('');
-  const [job, setJob] = useState('');
-  const [description, setDescription] = useState('');
-  const [artStyle, setArtStyle] = useState('Cartoon');
+  const [photoDataUrl, setPhotoDataUrl] = useState<string>('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [cardNumber, setCardNumber] = useState('');
 
-  const descriptionLength = description.length;
-  const isDescriptionValid = descriptionLength >= 50 && descriptionLength <= 200;
-  const isFormValid = name && job && isDescriptionValid && artStyle;
+  // Load stored photo if exists
+  useEffect(() => {
+    const storedInput = getStoredInput();
+    if (storedInput?.photoDataUrl) {
+      setPhotoDataUrl(storedInput.photoDataUrl);
+    }
+  }, [getStoredInput]);
+
+  const isFormValid = !!photoDataUrl;
+
+  const handlePhotoSelected = (dataUrl: string, file: File) => {
+    setPhotoDataUrl(dataUrl);
+    setPhotoFile(file);
+  };
 
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) {
-      toast.error(t('form_validation_error'));
+      toast.error(t('photo_required_error'));
       return;
     }
     setShowPayment(true);
@@ -54,13 +54,18 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!photoDataUrl) {
+      toast.error(t('photo_required_error'));
+      return;
+    }
+
     const paymentSuccess = await processPayment();
     
     if (paymentSuccess) {
       toast.success(t('payment_success'));
       
-      // Generate caricature
-      const result = await generate(name, job, description, artStyle);
+      // Generate caricature with photo
+      const result = await generate(photoDataUrl, photoFile?.name);
       
       if (result.success) {
         toast.success(t('generation_success'));
@@ -194,88 +199,8 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
           {t('create_caricature')}
         </h2>
 
-        <form onSubmit={handleSubmitForm} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className={labelStyles}>
-              {t('name')}
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={`${inputStyles} pl-10`}
-                placeholder={t('name_placeholder')}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="job" className={labelStyles}>
-              {t('job_profession')}
-            </Label>
-            <div className="relative">
-              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                id="job"
-                type="text"
-                value={job}
-                onChange={(e) => setJob(e.target.value)}
-                className={`${inputStyles} pl-10`}
-                placeholder={t('job_placeholder')}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description" className={labelStyles}>
-              {t('description')}
-            </Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className={inputStyles}
-              placeholder={t('description_placeholder')}
-              rows={4}
-              required
-            />
-            <p className={`text-xs ${
-              descriptionLength < 50 
-                ? 'text-destructive' 
-                : descriptionLength > 200 
-                ? 'text-destructive' 
-                : 'text-muted-foreground'
-            }`}>
-              {descriptionLength}/200 {t('characters')} 
-              {descriptionLength < 50 && ` (${t('minimum')} 50)`}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="art-style" className={labelStyles}>
-              {t('art_style')}
-            </Label>
-            <div className="relative">
-              <Palette className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-              <Select value={artStyle} onValueChange={setArtStyle}>
-                <SelectTrigger id="art-style" className={`${inputStyles} pl-10`}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ART_STYLES.map((style) => (
-                    <SelectItem key={style} value={style}>
-                      {style}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        <form onSubmit={handleSubmitForm} className="space-y-6">
+          <PhotoInput onPhotoSelected={handlePhotoSelected} initialPhoto={photoDataUrl} />
 
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl p-4">
             <p className="text-sm text-muted-foreground mb-1">{t('price_label')}</p>

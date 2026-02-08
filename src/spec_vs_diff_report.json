@@ -1,24 +1,19 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T11:06:49.520Z",
-  "summary": "LandingScreen was updated to remove any localized price display and instead render a static hero image loaded from /assets/generated/landing-hero.dim_1200x600.png. However, the diff shows no new static asset being added under frontend/public/assets/generated, so the required image file itself is not evidenced as present.",
-  "missing_requirements": [
-    {
-      "id": "REQ-18",
-      "requirement": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen, stored and served as a static frontend asset under frontend/public/assets/generated (landing-hero.dim_1200x600.png).",
-      "reason": "LandingScreen references the new image path, but the diff indicates no added files; there is no evidence the required image asset was actually added under frontend/public/assets/generated.",
-      "evidence": [
-        "frontend/src/screens/LandingScreen.tsx (references /assets/generated/landing-hero.dim_1200x600.png)",
-        "File diff summary: ADDED FILES: none"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-08T11:15:51.790Z",
+  "summary": "Diff implements a photo-based input flow (upload + camera capture) on the Input & Payment screen, updates generation types/persistence to store the photo as the primary attempt input, blocks payment/generation when no photo is present, keeps the simulated 3–5s generation delay with placeholder output, updates Result screen to remove obsolete text metadata and optionally show the source photo, and adds new i18n keys for the new UI strings.",
+  "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.68,
+  "confidence": 0.74,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/screens/LandingScreen.tsx",
+    "frontend/src/components/PhotoInput.tsx",
+    "frontend/src/features/generation/generationState.ts",
+    "frontend/src/features/generation/useCaricatureGeneration.ts",
+    "frontend/src/features/i18n/i18n.ts",
+    "frontend/src/screens/InputPaymentScreen.tsx",
+    "frontend/src/screens/ResultScreen.tsx",
     "project_state.json"
   ]
 }

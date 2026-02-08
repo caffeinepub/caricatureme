@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { type GenerationResult } from './generationState';
+import { type GenerationResult, type GenerationInput } from './generationState';
 
 export function useCaricatureGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const generate = async (
-    name: string,
-    job: string,
-    description: string,
-    artStyle: string
+    photoDataUrl: string,
+    photoFilename?: string
   ): Promise<{ success: boolean; error?: string }> => {
+    if (!photoDataUrl) {
+      return { success: false, error: 'No photo provided' };
+    }
+
     setIsGenerating(true);
     setError(null);
 
@@ -18,20 +20,20 @@ export function useCaricatureGeneration() {
       // Simulate generation delay (3-5 seconds)
       await new Promise(resolve => setTimeout(resolve, 4000));
 
-      // Generate Dicebear avatar URL using name as seed
-      const seed = encodeURIComponent(name);
+      // Generate Dicebear avatar URL using timestamp as seed
+      const seed = encodeURIComponent(`photo-${Date.now()}`);
       const imageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
 
       const result: GenerationResult = {
-        name,
-        job,
-        description,
-        artStyle,
+        photoDataUrl,
+        photoFilename,
         imageUrl,
         timestamp: Date.now(),
       };
 
+      // Store both result and input
       localStorage.setItem('caricature_result', JSON.stringify(result));
+      localStorage.setItem('caricature_input', JSON.stringify({ photoDataUrl, photoFilename } as GenerationInput));
       
       setIsGenerating(false);
       return { success: true };
@@ -52,8 +54,18 @@ export function useCaricatureGeneration() {
     }
   };
 
+  const getStoredInput = (): GenerationInput | null => {
+    try {
+      const data = localStorage.getItem('caricature_input');
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  };
+
   const clearAttempt = () => {
     localStorage.removeItem('caricature_result');
+    localStorage.removeItem('caricature_input');
     localStorage.removeItem('caricature_paid');
     setError(null);
   };
@@ -63,6 +75,7 @@ export function useCaricatureGeneration() {
     isGenerating,
     error,
     getResult,
+    getStoredInput,
     clearAttempt,
   };
 }

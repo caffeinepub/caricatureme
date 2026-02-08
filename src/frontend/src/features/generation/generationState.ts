@@ -1,8 +1,6 @@
 export interface GenerationInput {
-  name: string;
-  job: string;
-  description: string;
-  artStyle: string;
+  photoDataUrl: string;
+  photoFilename?: string;
 }
 
 export interface GenerationResult extends GenerationInput {

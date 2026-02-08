@@ -1,4 +1,4 @@
-import { Download, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/AppLayout';
 import { useI18n } from '../features/i18n/useI18n';
@@ -16,6 +16,7 @@ export default function ResultScreen({ onNavigate }: ResultScreenProps) {
   const { t } = useI18n();
   const { getResult, clearAttempt } = useCaricatureGeneration();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showSourcePhoto, setShowSourcePhoto] = useState(false);
   
   const result = getResult();
 
@@ -32,7 +33,8 @@ export default function ResultScreen({ onNavigate }: ResultScreenProps) {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      await downloadPng(result.imageUrl, `${result.name}-caricature.png`);
+      const filename = `caricature-${result.timestamp}.png`;
+      await downloadPng(result.imageUrl, filename);
       toast.success(t('download_success'));
     } catch (error) {
       toast.error(t('download_error'));
@@ -57,25 +59,32 @@ export default function ResultScreen({ onNavigate }: ResultScreenProps) {
           <div className="relative rounded-2xl overflow-hidden shadow-xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 p-4">
             <img
               src={result.imageUrl}
-              alt={`${result.name} caricature`}
+              alt="Generated caricature"
               className="w-full aspect-square object-contain rounded-xl"
             />
           </div>
 
-          <div className="bg-muted/50 rounded-xl p-4 space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">{t('name')}:</span>
-              <span className="font-medium">{result.name}</span>
+          {result.photoDataUrl && (
+            <div className="space-y-2">
+              <button
+                onClick={() => setShowSourcePhoto(!showSourcePhoto)}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ImageIcon className="h-4 w-4" />
+                {showSourcePhoto ? t('photo_hide_source') : t('photo_show_source')}
+              </button>
+              
+              {showSourcePhoto && (
+                <div className="rounded-xl overflow-hidden border-2 border-muted">
+                  <img
+                    src={result.photoDataUrl}
+                    alt="Source photo"
+                    className="w-full aspect-square object-cover"
+                  />
+                </div>
+              )}
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">{t('job_profession')}:</span>
-              <span className="font-medium">{result.job}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">{t('art_style')}:</span>
-              <span className="font-medium">{result.artStyle}</span>
-            </div>
-          </div>
+          )}
 
           <div className="space-y-3">
             <Button

@@ -1,11 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Remove the localized price from the Landing page, show it instead on the Input & Payment screen before generation, and replace the Landing price area with a new static image.
+**Goal:** Replace the text-based input details form with a photo-based upload/camera capture flow for caricature generation, while keeping the existing placeholder generation behavior.
 
 **Planned changes:**
-- Remove the price/currency UI from the Landing screen and stop relying on the regional pricing hook there.
-- Display the localized price on the Input & Payment flow before caricature generation using the existing regional pricing logic and formatting.
-- Add a new static, caricature-themed image asset on the Landing screen where the price section used to be, keeping the layout responsive.
+- Update the Input & Payment screen to remove the required fields (Name, Job/Profession, Appearance Description, Art Style) and add a required photo step with options to upload an image or use the device camera when supported.
+- Add photo preview and validation so the user cannot proceed to payment without selecting/capturing a valid image, and provide a clear fallback when camera capture is unavailable.
+- Update the generation attempt data model and local persistence to store the selected/captured photo across navigation and refresh during an attempt, and clear both photo and result when starting over.
+- Adjust the generation trigger to use the photo-based attempt state after successful payment while keeping the existing 3–5 second simulated loading and placeholder result behavior; block generation with a clear error if no photo exists.
+- Update the Result screen to remove/hide obsolete metadata fields tied to the removed inputs and optionally show a small thumbnail of the source photo if available.
+- Add new user-facing strings for the photo flow to the i18n system without changing existing translation values, with English fallback for missing translations.
 
-**User-visible outcome:** The Landing page no longer shows any price; users see a new image there instead, and the localized price appears on the Input & Payment screen before generation starts.
+**User-visible outcome:** Users can upload a photo or capture one with their camera (when supported), preview it, pay, and then see the generated (placeholder) caricature result; starting a new attempt clears both the previous result and the previously selected/captured photo.
