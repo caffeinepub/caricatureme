@@ -1,0 +1,242 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 7,
+  "summary": "CaricatureMe: a simplified MVP single-page web app (single index.html) that lets users sign up/login, enter job/appearance details, pay ~₹50 (mock or Razorpay), generate a caricature (placeholder initially), and download it, with a 4-page flow plus language and dark/light theme toggles.",
+  "architectural_notes": [
+    "MVP to be delivered as a single self-contained index.html with embedded CSS and inline JS; page navigation via show/hide (no frameworks/build tools).",
+    "Use localStorage for users/session (demo authentication), plus storing theme, language, and payment state.",
+    "Payments: support mock payment flow; optionally integrate Razorpay for INR payments.",
+    "Caricature generation: start with placeholder image generation (Dicebear); later swap to real AI API using provided prompt template.",
+    "Price display may use IP geolocation (ipapi.co) to choose currency and show fixed equivalent amounts.",
+    "UI change: do not show localized price on Landing; display price on Input & Payment screen before user clicks Generate/Pay. Use Landing space for imagery instead."
+  ],
+  "known_issues": [
+    "Language requirements are inconsistent: spec lists 10 supported languages, but MVP deliverable/checklist calls for only 3 languages (English/Hindi/Spanish)."
+  ],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Caricature-themed hero illustration banner (landing-hero.dim_1200x600.png)",
+  "existing_features": [
+    {
+      "id": "feature-implement-a-single-page-app-flow-with-four-screens-landing-login-signup-input-payment-result-and-client-side-navigation-state-so-users-can-complete-the-full-journey-without-page-reloads",
+      "title": "Implement a single-page app flow with four screens (Landing → Login/Signup → Input & Payment → Result) and client-side navigation/state so users can complete the full journey without page reloads.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-the-landing-screen-with-a-hero-section-showing-the-app-name-caricatureme-a-tagline-a-get-started-cta-a-price-display-that-adapts-to-detected-region-and-a-gallery-of-2-3-example-caricature-images",
+      "title": "Build the Landing screen with a hero section showing the app name “CaricatureMe”, a tagline, a “Get Started” CTA, a price display that adapts to detected region, and a gallery of 2–3 example caricature images.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-login-signup-ui-with-tabs-for-login-and-sign-up-fields-for-email-and-password-and-a-remember-me-checkbox-persist-demo-user-accounts-and-session-state-in-localstorage-as-described",
+      "title": "Implement Login/Signup UI with tabs for “Login” and “Sign Up”, fields for Email and Password, and a “Remember Me” checkbox; persist demo user accounts and session state in localStorage as described.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-the-input-payment-screen-with-a-form-that-collects-name-job-profession-appearance-description-enforce-50-200-characters-and-art-style-cartoon-comic-anime-watercolor-display-the-localized-price-and-provide-a-generate-my-caricature-button-that-initiates-payment-then-generation",
+      "title": "Create the Input & Payment screen with a form that collects Name, Job/Profession, Appearance Description (enforce 50–200 characters), and Art Style (Cartoon, Comic, Anime, Watercolor). Display the localized price and provide a “Generate My Caricature” button that initiates payment then generation.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-payment-step-for-the-50-equivalent-using-a-mock-payment-flow-by-default-show-a-minimal-payment-form-allow-the-user-to-click-pay-wait-2-seconds-mark-the-session-order-as-paid-in-localstorage-then-proceed-to-caricature-generation-include-an-optional-razorpay-integration-placeholder-that-is-disabled-unless-a-key-is-provided",
+      "title": "Implement a payment step for the ₹50 equivalent using a mock payment flow by default: show a minimal payment form, allow the user to click “Pay”, wait ~2 seconds, mark the session/order as paid in localStorage, then proceed to caricature generation. Include an optional Razorpay integration placeholder that is disabled unless a key is provided.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-currency-detection-and-display-logic-call-https-ipapi-co-json-to-determine-user-region-and-display-fixed-equivalents-india-50-usa-0-60-europe-0-55-uk-0-50-others-0-60-if-detection-fails-fall-back-to-0-60-or-50-as-a-safe-default",
+      "title": "Add currency detection and display logic: call `https://ipapi.co/json/` to determine user region and display fixed equivalents (India ₹50, USA $0.60, Europe €0.55, UK £0.50, Others $0.60). If detection fails, fall back to $0.60 or ₹50 as a safe default.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-caricature-generation-with-a-loading-state-3-5-seconds-and-a-placeholder-avatar-api-use-dicebear-https-api-dicebear-com-7-x-avataaars-svg-seed-name-as-the-initial-generator-and-store-the-generated-image-url-and-the-user-s-input-so-the-result-screen-can-render-it-after-payment",
+      "title": "Implement caricature generation with a loading state (3–5 seconds) and a placeholder avatar API. Use Dicebear `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` as the initial generator, and store the generated image URL (and the user’s input) so the Result screen can render it after payment.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-the-result-screen-to-display-the-generated-caricature-and-provide-1-a-prominent-download-button-that-saves-the-image-as-png-and-2-a-create-another-button-that-returns-to-the-input-payment-screen",
+      "title": "Build the Result screen to display the generated caricature and provide: (1) a prominent “Download” button that saves the image as PNG, and (2) a “Create Another” button that returns to the Input & Payment screen.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-top-right-language-selector-with-flags-icons-supporting-10-languages-english-hindi-spanish-french-german-portuguese-arabic-chinese-japanese-russian-persist-selection-in-localstorage-and-translate-the-specified-key-ui-strings-using-exactly-the-provided-translations",
+      "title": "Add a top-right language selector (with flags/icons) supporting 10 languages (English, Hindi, Spanish, French, German, Portuguese, Arabic, Chinese, Japanese, Russian). Persist selection in localStorage and translate the specified key UI strings using exactly the provided translations.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-dark-light-mode-toggle-sun-moon-icon-next-to-the-language-selector-persist-the-theme-in-localstorage-and-implement-the-specified-light-and-dark-palettes-including-dark-background-1a1a1a-and-dark-card-color-2d2d2d-with-smooth-transitions",
+      "title": "Add a dark/light mode toggle (sun/moon icon) next to the language selector. Persist the theme in localStorage and implement the specified light and dark palettes, including dark background (#1a1a1a) and dark card color (#2d2d2d), with smooth transitions.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-requested-visual-design-system-across-all-screens-purple-to-pink-primary-gradient-667eea-to-764ba2-centered-max-width-500px-layout-16px-rounded-cards-subtle-shadows-system-font-stack-responsive-behavior-from-320px-to-1920px-and-consistent-button-styles",
+      "title": "Apply the requested visual design system across all screens: purple-to-pink primary gradient (#667eea to #764ba2), centered max-width 500px layout, 16px rounded cards, subtle shadows, system font stack, responsive behavior from 320px to 1920px, and consistent button styles.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-basic-route-guards-and-persistence-rules-block-access-to-input-payment-and-result-when-not-logged-in-on-refresh-restore-theme-language-session-from-storage-ensure-no-paid-result-state-leaks-across-users-or-new-sessions",
+      "title": "Implement basic route guards and persistence rules: block access to Input/Payment and Result when not logged in; on refresh, restore theme/language/session from storage; ensure no paid/result state leaks across users or new sessions.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-required-static-example-images-as-build-time-assets-and-render-them-on-the-landing-screen-without-fetching-them-through-the-backend",
+      "title": "Add required static example images as build-time assets and render them on the Landing screen without fetching them through the backend.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-clearly-visible-continue-with-google-link-button-on-the-login-signup-screen-that-opens-google-account-signup-in-a-new-tab-https-accounts-google-com-signup",
+      "title": "Add a clearly visible \"Continue with Google\" link/button on the Login/Signup screen that opens Google Account signup in a new tab (https://accounts.google.com/signup).",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-localized-price-display-from-the-landing-screen-so-no-price-currency-amount-is-shown-on-the-landing-page",
+      "title": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-removed-landing-price-area-with-a-new-visually-appealing-static-image-on-the-landing-screen",
+      "title": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Single-file (index.html) MVP with 4-page flow: Landing → Login/Signup → Input & Payment → Result, using show/hide navigation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Landing page with hero, Get Started CTA, 2–3 example images, and price display with location-based currency",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Email/password login + signup with Remember Me using localStorage (demo auth/session)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Input form: name, job/profession, appearance description (50–200 chars), and art style dropdown (Cartoon/Comic/Anime/Watercolor)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Payment flow charging ~₹50 (mock payment for testing and optional Razorpay integration); store paid state in localStorage",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Currency detection/conversion for displaying price by region (via ipapi.co lookup and fixed equivalents)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Caricature generation step with loading animation; use placeholder avatar API (Dicebear) initially with prompt template for future real AI",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Result page displaying generated image with Download as PNG and Create Another actions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Language selector UI stored in localStorage (targeting multi-language; MVP deliverable mentions at least English/Hindi/Spanish)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Dark/light mode toggle with stored preference in localStorage and specified design system (gradient, cards, responsive layout)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Keep the backend minimal: do not implement real email/password authentication or payment processing in Motoko for this MVP; the app should function using frontend localStorage and external placeholder APIs only.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add a “Sign up with Google” option/link on the Login/Signup screen (Google signup link/button UI)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Move localized price display off the Landing screen and show it on the Input & Payment (pre-generation) screen instead; replace Landing price area with an image/visual so the Landing layout looks better",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Ensure the localized price is displayed on the Input & Payment flow before caricature generation (i.e., on the Input & Payment screen prior to starting generation), using the existing regional pricing logic.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "CaricatureMe",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

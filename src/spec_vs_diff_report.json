@@ -1,0 +1,24 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-08T11:06:49.520Z",
+  "summary": "LandingScreen was updated to remove any localized price display and instead render a static hero image loaded from /assets/generated/landing-hero.dim_1200x600.png. However, the diff shows no new static asset being added under frontend/public/assets/generated, so the required image file itself is not evidenced as present.",
+  "missing_requirements": [
+    {
+      "id": "REQ-18",
+      "requirement": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen, stored and served as a static frontend asset under frontend/public/assets/generated (landing-hero.dim_1200x600.png).",
+      "reason": "LandingScreen references the new image path, but the diff indicates no added files; there is no evidence the required image asset was actually added under frontend/public/assets/generated.",
+      "evidence": [
+        "frontend/src/screens/LandingScreen.tsx (references /assets/generated/landing-hero.dim_1200x600.png)",
+        "File diff summary: ADDED FILES: none"
+      ]
+    }
+  ],
+  "hallucinated_features": [],
+  "confidence": 0.68,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/screens/LandingScreen.tsx",
+    "project_state.json"
+  ]
+}

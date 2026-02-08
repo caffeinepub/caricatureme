@@ -1,0 +1,41 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-remove-the-localized-price-display-from-the-landing-screen-so-no-price-currency-amount-is-shown-on-the-landing-page",
+      "featureTitle": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
+      "files": [
+        "frontend/src/screens/LandingScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-16"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-replace-the-removed-landing-price-area-with-a-new-visually-appealing-static-image-on-the-landing-screen",
+      "featureTitle": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
+      "files": [
+        "frontend/src/screens/LandingScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-18"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

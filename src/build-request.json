@@ -1,0 +1,75 @@
+{
+  "kind": "build_request",
+  "title": "Move localized price off Landing and replace with a new image",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-16",
+      "text": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-3"
+        ],
+        "quotes": [
+          "let the price be displayed before generation not in the landing page. looks very bad."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Landing screen no longer renders the price label or localized amount.",
+        "Landing screen no longer depends on the regional pricing hook just to show price (no unused pricing UI remains)."
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Ensure the localized price is displayed on the Input & Payment flow before caricature generation (i.e., on the Input & Payment screen prior to starting generation), using the existing regional pricing logic.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-3"
+        ],
+        "quotes": [
+          "let the price be displayed before generation not in the landing page."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the user is on the Input & Payment screen (before generation starts), the localized price is visible.",
+        "Price shown uses the existing regional price detection (ipapi-based) and formatting already used elsewhere."
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-3"
+        ],
+        "quotes": [
+          "instead add some image"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Landing screen displays the new static image asset in place of the removed price section.",
+        "The image is loaded as a static frontend asset (not fetched via the backend).",
+        "Landing layout remains responsive and visually balanced at mobile and desktop widths."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/src/components/ui (read-only UI components).",
+    "Keep the backend as-is (no new backend pricing/payment logic).",
+    "Store and serve any new images as static frontend assets under frontend/public/assets/generated (do not route images through the backend)."
+  ],
+  "nonGoals": [
+    "Changing the regional price detection endpoint (https://ipapi.co/json/) or the fixed price mapping logic.",
+    "Adding real payment processing beyond the existing mock/placeholder approach.",
+    "Redesigning unrelated screens (Auth/Result) beyond what is necessary to support the Landing change."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Caricature-themed hero illustration banner (landing-hero.dim_1200x600.png)"
+    ],
+    "edits": []
+  }
+}

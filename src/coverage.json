@@ -1,0 +1,60 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-08T11:06:49.523Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-16",
+        "summary": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/screens/LandingScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/screens/LandingScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-17",
+        "summary": "Ensure the localized price is displayed on the Input & Payment flow before caricature generation (i.e., on the Input & Payment screen prior to starting generation), using the existing regional pricing logic.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/screens/InputPaymentScreen.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-18",
+        "summary": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
+          "frontend/src/screens/LandingScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
+          "frontend/src/screens/LandingScreen.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
+    "frontend/src/screens/LandingScreen.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

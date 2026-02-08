@@ -1,0 +1,58 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Move localized price from Landing to Input & Payment, add new Landing hero image",
+  "requirements": [
+    {
+      "id": "REQ-16",
+      "summary": "Remove localized price UI from the Landing screen and drop any Landing dependency on regional pricing logic.",
+      "acceptanceCriteria": [
+        "Landing screen no longer renders the price label or localized amount.",
+        "Landing screen no longer depends on the regional pricing hook just to show price (no unused pricing UI remains)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/screens/LandingScreen.tsx",
+          "operation": "modify",
+          "description": "Remove the regional pricing hook usage and delete the price label/amount section so no currency/amount is shown on Landing. Ensure related imports/variables are removed to avoid unused pricing UI remnants."
+        }
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "summary": "Show the localized price within the Input & Payment flow prior to starting caricature generation using the existing regional pricing logic.",
+      "acceptanceCriteria": [
+        "When the user is on the Input & Payment screen (before generation starts), the localized price is visible.",
+        "Price shown uses the existing regional price detection (ipapi-based) and formatting already used elsewhere."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/screens/InputPaymentScreen.tsx",
+          "operation": "modify",
+          "description": "Ensure the localized price section is clearly visible in the pre-generation portion of the Input & Payment flow (before generation starts), continuing to use the existing useRegionalPrice hook output (priceDisplay) and existing i18n labels. Keep the backend and payment logic unchanged."
+        }
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "summary": "Replace the removed Landing price area with a new static hero illustration image and keep the layout responsive.",
+      "acceptanceCriteria": [
+        "Landing screen displays the new static image asset in place of the removed price section.",
+        "The image is loaded as a static frontend asset (not fetched via the backend).",
+        "Landing layout remains responsive and visually balanced at mobile and desktop widths."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/landing-hero.dim_1200x600.png",
+          "operation": "create",
+          "description": "Add the required static hero illustration asset at frontend/public/assets/generated/landing-hero.dim_1200x600.png (Caricature-themed hero illustration banner)."
+        },
+        {
+          "path": "frontend/src/screens/LandingScreen.tsx",
+          "operation": "modify",
+          "description": "Render the new static hero image (frontend/public/assets/generated/landing-hero.dim_1200x600.png) in the UI where the price section used to be. Use responsive layout/styling so it looks balanced on mobile and desktop, and ensure it is referenced as a static frontend asset (not via backend fetch)."
+        }
+      ]
+    }
+  ]
+}
