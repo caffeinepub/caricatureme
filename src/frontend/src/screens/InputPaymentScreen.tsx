@@ -71,7 +71,12 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
         toast.success(t('generation_success'));
         onNavigate();
       } else {
-        toast.error(result.error || t('generation_error'));
+        // Show error but don't block - fallback was used
+        if (result.error) {
+          toast.error(result.error);
+        } else {
+          toast.error(t('generation_error'));
+        }
       }
     } else {
       toast.error(t('payment_error'));

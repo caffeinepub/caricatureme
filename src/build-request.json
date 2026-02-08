@@ -1,114 +1,70 @@
 {
   "kind": "build_request",
-  "title": "Replace input details form with photo upload/camera capture for caricature generation",
+  "title": "Open Google button directly to Gmail + deliver full project source",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-19",
-      "text": "Remove the text-based input details form from the Input & Payment screen and replace it with a photo-based input flow that lets the user either (a) upload an image from their device or (b) capture a photo using the device camera (when supported by the browser).",
+      "id": "REQ-28",
+      "text": "Update the \"Continue with Google\" link/button on the Login/Signup screen so clicking it opens Gmail directly (https://mail.google.com) in a new tab instead of opening the Google Account signup page.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "recent-messages"
         ],
         "quotes": [
-          "since he or she will be uploading his her picture remove the input details screen and add upload picture or camera feature. can you do that?"
+          "it to going to google account and asking to create email account. instead it should go to the gmail account directly",
+          "it should go to the gmail account directly",
+          "(https://mail.google.com) or Gmail login"
         ]
       },
       "acceptanceCriteria": [
-        "On the Input & Payment screen, the fields Name, Job/Profession, Appearance Description, and Art Style are no longer required to proceed.",
-        "The screen provides a clear 'Upload photo' option that accepts common image formats (e.g., JPG/PNG/HEIC if supported by the browser).",
-        "The screen provides a 'Use camera' option (or equivalent) that uses browser camera capture support where available, and degrades gracefully (e.g., hidden/disabled with explanatory text) when not available.",
-        "The user can see a preview of the selected/captured photo before continuing.",
-        "The user cannot continue to payment unless a valid image has been selected or captured."
+        "On AuthScreen, the anchor used by the \"Continue with Google\" button no longer points to https://accounts.google.com/signup.",
+        "Clicking the button opens https://mail.google.com in a new browser tab (target=\"_blank\") with rel=\"noopener noreferrer\" preserved.",
+        "The button text remains \"Continue with Google\" (use existing i18n key continue_with_google; do not add or change translations)."
       ]
     },
     {
-      "id": "REQ-20",
-      "text": "Update the generation data model and local persistence so that a selected/captured photo is stored as the primary generation input for the current attempt, and ensure attempt state is cleared appropriately when starting over.",
-      "target": "frontend",
+      "id": "REQ-29",
+      "text": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-4"
+          "recent-messages"
         ],
         "quotes": [
-          "remove the input details screen and add upload picture or camera feature"
+          "provide the source code",
+          "the full project"
         ]
       },
       "acceptanceCriteria": [
-        "The generation input/result types (currently name/job/description/artStyle) are updated so the app can persist the selected/captured image reference/data for the attempt.",
-        "The selected/captured image is persisted for the current attempt in a way that still works across the existing screen navigation flow (Input → Payment → Generating → Result) and page refresh during the attempt.",
-        "When the user taps 'Create Another', both the stored caricature result and the stored uploaded/captured photo for the attempt are cleared so no state leaks into the next attempt."
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "text": "Adjust the caricature generation flow to work with photo input: after successful payment, trigger generation using the uploaded/captured photo as the source input, while keeping the existing placeholder generation behavior (3–5 second loading simulation and placeholder image output) until a real image-to-caricature generator is implemented.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "add upload picture or camera feature"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After payment succeeds, generation starts using the photo-based attempt state (not the removed text fields).",
-        "The existing generating loading screen remains (3–5 seconds simulated delay).",
-        "A generated image URL is still produced and stored so the Result screen renders as before (placeholder output is acceptable for now).",
-        "If no photo exists in the attempt state at generation time, generation is blocked and the user is shown a clear error message."
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "text": "Update the Result screen UI to reflect the new photo-based input: remove (or hide) the now-obsolete user metadata display that depends on Name/Job/Art Style, and optionally show a small thumbnail/preview of the uploaded/captured source photo if available.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "remove the input details screen"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Result screen no longer shows fields that rely on removed inputs (e.g., Job/Profession and Art Style) unless equivalent data still exists.",
-        "The generated caricature image remains the primary focus and the Download-as-PNG button continues to work.",
-        "If a source photo is available for the attempt, the Result screen can display it as a secondary preview without affecting download of the generated caricature."
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "text": "Add any new user-facing strings needed for the photo upload/camera capture flow to the i18n system without modifying existing translation values for current keys; any missing translations for new keys should fall back to English.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "add upload picture or camera feature"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All new labels/buttons/errors introduced for photo upload/camera capture are sourced via the app’s i18n mechanism.",
-        "No existing translation values for current keys are changed.",
-        "If a new key is not translated in a given language, the UI displays a sensible English fallback for that key."
+        "The delivered output includes the complete frontend and backend directories (including configuration files like frontend/.env.example) needed to run/build the app.",
+        "No files are omitted that are required to install dependencies and start the app using the project’s existing tooling.",
+        "The included source matches the implemented change where the Google button opens https://mail.google.com."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (read-only Shadcn components).",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
-    "Keep the backend as a minimal placeholder; do not implement real image storage or processing in Motoko for this change."
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Use English for any new user-facing text; do not modify existing translation values for existing i18n keys.",
+    "Backend must remain a single Motoko actor in backend/main.mo; only introduce migration.mo if an actual state upgrade is required."
   ],
   "nonGoals": [
-    "Implementing a real AI image-to-caricature model or integrating with a third-party AI service.",
-    "Implementing backend file storage, database storage, or uploading images to external cloud storage.",
-    "Adding third-party authentication beyond what already exists (Internet Identity only)."
+    "Implementing real Google OAuth / \"Sign in with Google\" authentication flow.",
+    "Any changes to payment, generation, pricing, routing, theming, or i18n beyond what is necessary to change the external link destination.",
+    "Using the uploaded screenshot (image-1.png) in the app UI unless explicitly requested."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

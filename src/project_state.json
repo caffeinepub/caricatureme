@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
-  "summary": "CaricatureMe: simplified MVP single-page web app (single index.html) that lets users sign up/login, upload a photo (file upload or camera capture) instead of entering detailed appearance text, pay ~₹50 (mock or Razorpay), generate a caricature (placeholder initially), and download it, with a 4-screen flow plus language and dark/light theme toggles.",
+  "projectStateVersion": 13,
+  "summary": "CaricatureMe: simplified MVP single-page web app (single index.html) that lets users sign up/login, upload/capture a photo, pay ~₹50 (mock or Razorpay), generate a caricature (currently placeholder; plan to support semi-realistic photo-based generation via a user-provided API), and download it, with a 4-screen flow plus language and dark/light theme toggles.",
   "architectural_notes": [
     "MVP to be delivered as a single self-contained index.html with embedded CSS and inline JS; page navigation via show/hide (no frameworks/build tools).",
     "Use localStorage for users/session (demo authentication), plus storing theme, language, and payment state.",
@@ -9,12 +9,15 @@
     "Caricature generation: start with placeholder image generation (Dicebear); later swap to real AI API using provided prompt template.",
     "Price display may use IP geolocation (ipapi.co) to choose currency and show fixed equivalent amounts.",
     "UI change: do not show localized price on Landing; display price on Input & Payment screen before user clicks Generate/Pay. Use Landing space for imagery instead.",
-    "Input change: remove/replace the text-based Input Details form; collect a user photo via file upload and/or camera (getUserMedia) and keep the image data client-side (e.g., as a data URL or Blob) for the generation placeholder pipeline."
+    "Input change: remove/replace the text-based Input Details form; collect a user photo via file upload and/or camera (getUserMedia) and keep the image data client-side (e.g., as a data URL or Blob) for the generation placeholder pipeline.",
+    "Razorpay official Checkout script URL: https://checkout.razorpay.com/v1/checkout.js",
+    "Plan to introduce a .env/config mechanism to store keys (e.g., Razorpay key, future AI API endpoint/key) rather than hardcoding secrets in index.html."
   ],
   "known_issues": [
-    "Language requirements are inconsistent: spec lists 10 supported languages, but MVP deliverable/checklist calls for only 3 languages (English/Hindi/Spanish)."
+    "Language requirements are inconsistent: spec lists 10 supported languages, but MVP deliverable/checklist calls for only 3 languages (English/Hindi/Spanish).",
+    "Current caricature output is unrealistic because the placeholder generator (Dicebear) does not use/analyze the uploaded photo; users expect photo-based generation."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-implement-a-single-page-app-flow-with-four-screens-landing-login-signup-input-payment-result-and-client-side-navigation-state-so-users-can-complete-the-full-journey-without-page-reloads",
@@ -183,6 +186,54 @@
         "REQ-23"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-frontend-environment-configuration-layer-using-a-env-file-that-the-user-can-update-including-committing-a-safe-example-template-file-e-g-env-example-with-placeholder-values-for-all-supported-keys",
+      "title": "Add a frontend environment-configuration layer using a .env file that the user can update, including committing a safe example template file (e.g., .env.example) with placeholder values for all supported keys.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-environment-variable-access-in-the-frontend-so-it-works-in-the-current-react-build-tooling-do-not-use-process-env-in-browser-code-ensure-razorpay-placeholder-initialization-reads-the-configured-key-from-the-environment-and-remains-disabled-when-the-key-is-not-set",
+      "title": "Fix environment variable access in the frontend so it works in the current React build tooling (do not use process.env in browser code). Ensure Razorpay placeholder initialization reads the configured key from the environment and remains disabled when the key is not set.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-support-for-a-user-provided-semi-realistic-image-to-caricature-rest-api-configured-via-env-and-update-the-generation-hook-to-call-it-when-configured-the-api-call-must-send-the-uploaded-captured-photo-as-the-source-input-and-use-the-api-response-as-the-generated-image-result-if-the-api-is-not-configured-or-the-call-fails-fall-back-to-the-existing-placeholder-generation-behavior-3-5-second-delay-dicebear-image-url",
+      "title": "Add support for a user-provided semi-realistic image-to-caricature REST API configured via .env, and update the generation hook to call it when configured. The API call must send the uploaded/captured photo as the source input and use the API response as the generated image result; if the API is not configured or the call fails, fall back to the existing placeholder generation behavior (3–5 second delay + Dicebear image URL).",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-any-new-user-facing-error-help-text-introduced-by-the-new-env-configured-api-integration-is-in-english-and-if-added-to-i18n-defaults-falls-back-to-english-for-missing-translations",
+      "title": "Ensure any new user-facing error/help text introduced by the new .env-configured API integration is in English (and, if added to i18n, defaults/falls back to English for missing translations).",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-continue-with-google-link-button-on-the-login-signup-screen-so-clicking-it-opens-gmail-directly-https-mail-google-com-in-a-new-tab-instead-of-opening-the-google-account-signup-page",
+      "title": "Update the \"Continue with Google\" link/button on the Login/Signup screen so clicking it opens Gmail directly (https://mail.google.com) in a new tab instead of opening the Google Account signup page.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-provide-export-the-full-project-source-code-as-a-complete-buildable-project-frontend-backend-reflecting-the-gmail-link-change",
+      "title": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -271,6 +322,30 @@
     {
       "id": "AR-28",
       "summary": "Replace/remove the text-based Input Details form and instead add a photo upload or camera capture feature (upload from device or take a picture) as the main input before payment/generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Support semi-realistic caricature generation that uses the uploaded/captured photo as the direct input by integrating a user-provided image-to-caricature API (replacing/augmenting the Dicebear placeholder).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Add a .env-based configuration structure for secrets/keys (e.g., Razorpay key and future AI API endpoint/key) and update the app to read config accordingly.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Change the \"Continue with Google\" link/button behavior so it opens Gmail directly (like other apps) instead of the Google Account creation page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Provide/export the full project source code (complete project, not just individual files)",
       "reqIds": [],
       "status": "pending"
     }

@@ -1,19 +1,40 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T11:15:51.790Z",
-  "summary": "Diff implements a photo-based input flow (upload + camera capture) on the Input & Payment screen, updates generation types/persistence to store the photo as the primary attempt input, blocks payment/generation when no photo is present, keeps the simulated 3–5s generation delay with placeholder output, updates Result screen to remove obsolete text metadata and optionally show the source photo, and adds new i18n keys for the new UI strings.",
-  "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.74,
+  "generatedAt": "2026-02-08T15:47:15.534Z",
+  "summary": "REQ-28 appears implemented by updating the AuthScreen \"Continue with Google\" anchor to open https://mail.google.com in a new tab with rel=\"noopener noreferrer\" preserved. REQ-29 (delivering/exporting the full buildable project source, including frontend+backend and configs) cannot be confirmed from the provided diff summary; backend delivery/config completeness is not evidenced. Several non-requested documentation/metadata files were added/modified.",
+  "missing_requirements": [
+    {
+      "id": "REQ-29",
+      "requirement": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
+      "reason": "The diff summary only shows changes/additions to frontend documentation/metadata and one frontend screen. It does not provide evidence that the complete project source (including backend directory and required config files like frontend/.env.example) is included/delivered or updated as part of this change.",
+      "evidence": [
+        "<file-diff> shows only: ADDED frontend/README.md; MODIFIED frontend/src/screens/AuthScreen.tsx, frontend-file-summaries.txt, project_state.json; no backend/ directory files shown"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added a new frontend/README.md with extensive feature/tech-stack documentation that was not requested.",
+      "reason": "BuildRequest only asked to change the Google button link destination and to deliver the existing full project source; it did not request new documentation files.",
+      "evidence": [
+        "frontend/README.md"
+      ]
+    },
+    {
+      "description": "Modified/added project metadata files (frontend-file-summaries.txt and project_state.json) containing broad feature descriptions beyond the requested Gmail link change.",
+      "reason": "These changes are not part of REQ-28 and do not contribute to changing the \"Continue with Google\" link destination; they were not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt",
+        "project_state.json"
+      ]
+    }
+  ],
+  "confidence": 0.67,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/components/PhotoInput.tsx",
-    "frontend/src/features/generation/generationState.ts",
-    "frontend/src/features/generation/useCaricatureGeneration.ts",
-    "frontend/src/features/i18n/i18n.ts",
-    "frontend/src/screens/InputPaymentScreen.tsx",
-    "frontend/src/screens/ResultScreen.tsx",
+    "frontend/README.md",
+    "frontend/src/screens/AuthScreen.tsx",
     "project_state.json"
   ]
 }

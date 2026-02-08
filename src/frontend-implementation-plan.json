@@ -1,118 +1,37 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Photo upload + camera capture flow for caricature generation (frontend-only)",
+  "title": "Update Google button to open Gmail and ensure frontend source is export-ready",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Replace text-based input form on Input & Payment screen with a photo-based flow supporting upload and (when available) camera capture, including preview and gating progression until a valid image is selected.",
+      "id": "REQ-28",
+      "summary": "Change the AuthScreen \"Continue with Google\" button to open Gmail (https://mail.google.com) in a new tab while keeping existing i18n text and security rel attributes.",
       "acceptanceCriteria": [
-        "On the Input & Payment screen, the fields Name, Job/Profession, Appearance Description, and Art Style are no longer required to proceed.",
-        "The screen provides a clear 'Upload photo' option that accepts common image formats (e.g., JPG/PNG/HEIC if supported by the browser).",
-        "The screen provides a 'Use camera' option (or equivalent) that uses browser camera capture support where available, and degrades gracefully (e.g., hidden/disabled with explanatory text) when not available.",
-        "The user can see a preview of the selected/captured photo before continuing.",
-        "The user cannot continue to payment unless a valid image has been selected or captured."
+        "On AuthScreen, the anchor used by the \"Continue with Google\" button no longer points to https://accounts.google.com/signup.",
+        "Clicking the button opens https://mail.google.com in a new browser tab (target=\"_blank\") with rel=\"noopener noreferrer\" preserved.",
+        "The button text remains \"Continue with Google\" (use existing i18n key continue_with_google; do not add or change translations)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/screens/InputPaymentScreen.tsx",
+          "path": "frontend/src/screens/AuthScreen.tsx",
           "operation": "modify",
-          "description": "Remove the Name/Job/Description/Art Style form fields and replace with a photo input UI: (1) an 'Upload photo' file input (accepting common image formats) and (2) a 'Use camera' option that integrates the selected camera component hook. Show a preview of the selected/captured photo, provide retake/remove controls, and block progressing to the payment step until a valid photo is present. Use the selected 'camera' component (useCamera hook) to provide camera preview + capture; verify the component's usage instructions before implementing."
-        },
+          "description": "Update the \"Continue with Google\" anchor href to https://mail.google.com while preserving target=\"_blank\", rel=\"noopener noreferrer\", and the existing i18n key usage (continue_with_google)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "summary": "Ensure the frontend portion of the project is included and buildable in the delivered full-project source export, reflecting the Gmail-link change.",
+      "acceptanceCriteria": [
+        "The delivered output includes the complete frontend and backend directories (including configuration files like frontend/.env.example) needed to run/build the app.",
+        "No files are omitted that are required to install dependencies and start the app using the project’s existing tooling.",
+        "The included source matches the implemented change where the Google button opens https://mail.google.com."
+      ],
+      "file_operations": [
         {
-          "path": "frontend/src/components/PhotoInput.tsx",
+          "path": "frontend/README.md",
           "operation": "create",
-          "description": "Create a reusable photo input component used by InputPaymentScreen that encapsulates upload + camera capture + preview UI, including graceful camera support detection, clear error messaging, and a stable non-zero-dimension camera preview area. Use the selected 'camera' component (useCamera hook) to support live preview and capture; verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "summary": "Update generation attempt model and local persistence to store the selected/captured photo as the primary input, persist across navigation/refresh, and clear attempt state (including photo) when starting over.",
-      "acceptanceCriteria": [
-        "The generation input/result types (currently name/job/description/artStyle) are updated so the app can persist the selected/captured image reference/data for the attempt.",
-        "The selected/captured image is persisted for the current attempt in a way that still works across the existing screen navigation flow (Input → Payment → Generating → Result) and page refresh during the attempt.",
-        "When the user taps 'Create Another', both the stored caricature result and the stored uploaded/captured photo for the attempt are cleared so no state leaks into the next attempt."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/generation/generationState.ts",
-          "operation": "modify",
-          "description": "Update GenerationInput/GenerationResult types to represent photo-based input (e.g., include a persisted photo data reference such as a data URL and optional filename/metadata) and remove reliance on name/job/description/artStyle for the attempt."
-        },
-        {
-          "path": "frontend/src/features/generation/useCaricatureGeneration.ts",
-          "operation": "modify",
-          "description": "Persist the attempt's photo input alongside the generation result so it survives navigation and refresh during an attempt; update clearAttempt() to also clear the persisted photo input for the attempt (in addition to existing stored result/paid flags)."
-        },
-        {
-          "path": "frontend/src/screens/ResultScreen.tsx",
-          "operation": "modify",
-          "description": "Ensure 'Create Another' triggers attempt clearing that removes both the generated result and the persisted source photo for the attempt (no state leak into the next attempt)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Adjust generation flow to use photo input after payment, keeping the existing 3–5 second simulated loading and placeholder output until a real generator exists; block generation with a clear error if no photo exists.",
-      "acceptanceCriteria": [
-        "After payment succeeds, generation starts using the photo-based attempt state (not the removed text fields).",
-        "The existing generating loading screen remains (3–5 seconds simulated delay).",
-        "A generated image URL is still produced and stored so the Result screen renders as before (placeholder output is acceptable for now).",
-        "If no photo exists in the attempt state at generation time, generation is blocked and the user is shown a clear error message."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/screens/InputPaymentScreen.tsx",
-          "operation": "modify",
-          "description": "Update the post-payment flow to trigger generation using the persisted photo-based attempt state. If a photo is missing at payment success time (unexpected state), block generation and show a clear toast/message sourced from i18n."
-        },
-        {
-          "path": "frontend/src/features/generation/useCaricatureGeneration.ts",
-          "operation": "modify",
-          "description": "Change generate() to accept/use the photo-based input, keep the existing simulated delay (3–5 seconds), and continue producing/storing a placeholder generated image URL so the Result screen works unchanged. Add a guard that fails clearly if called without a photo input."
-        }
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "summary": "Update Result screen to remove obsolete metadata (name/job/art style) and optionally show a small thumbnail of the source photo when available, while keeping the generated image and download behavior intact.",
-      "acceptanceCriteria": [
-        "The Result screen no longer shows fields that rely on removed inputs (e.g., Job/Profession and Art Style) unless equivalent data still exists.",
-        "The generated caricature image remains the primary focus and the Download-as-PNG button continues to work.",
-        "If a source photo is available for the attempt, the Result screen can display it as a secondary preview without affecting download of the generated caricature."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/screens/ResultScreen.tsx",
-          "operation": "modify",
-          "description": "Remove/hide the UI section that displays name/job/art style, and optionally render a secondary source-photo thumbnail/preview (when available from stored attempt/result state). Keep the generated image as primary and ensure the existing PNG download behavior continues to work."
-        },
-        {
-          "path": "frontend/src/lib/downloadPng.ts",
-          "operation": "modify",
-          "description": "Adjust download naming logic if needed to no longer rely on removed name input (e.g., fallback to a timestamp-based filename) while preserving existing download functionality for the generated caricature image."
-        }
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "summary": "Add new photo flow strings to i18n without changing existing translation values; ensure missing new keys fall back to English.",
-      "acceptanceCriteria": [
-        "All new labels/buttons/errors introduced for photo upload/camera capture are sourced via the app’s i18n mechanism.",
-        "No existing translation values for current keys are changed.",
-        "If a new key is not translated in a given language, the UI displays a sensible English fallback for that key."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/i18n/i18n.ts",
-          "operation": "modify",
-          "description": "Add new i18n keys for the photo upload/camera capture flow (labels, helper text, and errors) without altering existing key values. Ensure the translate() function falls back to English for missing keys so untranslated new keys still display in English."
-        },
-        {
-          "path": "frontend/src/screens/InputPaymentScreen.tsx",
-          "operation": "modify",
-          "description": "Replace any newly introduced labels/buttons/errors for the photo upload/camera capture flow with i18n keys (no hardcoded user-facing strings)."
+          "description": "Add concise frontend run/build instructions and a note that the AuthScreen \"Continue with Google\" button opens https://mail.google.com, to support delivering a complete, buildable project source bundle."
         }
       ]
     }

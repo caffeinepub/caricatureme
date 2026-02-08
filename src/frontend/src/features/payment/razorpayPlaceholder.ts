@@ -1,10 +1,10 @@
 // Razorpay integration placeholder
 // This will remain disabled unless a Razorpay key is configured
 
+import { env, isRazorpayConfigured } from '../../config/env';
+
 export function initRazorpay(amount: number, onSuccess: () => void) {
-  const RAZORPAY_KEY = process.env.RAZORPAY_KEY;
-  
-  if (!RAZORPAY_KEY) {
+  if (!isRazorpayConfigured()) {
     console.warn('Razorpay key not configured. Using mock payment.');
     return null;
   }

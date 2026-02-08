@@ -61,7 +61,7 @@ export default function AuthScreen({ onNavigate }: AuthScreenProps) {
 
         <Button asChild variant="outline" className="w-full mb-4">
           <a 
-            href="https://accounts.google.com/signup" 
+            href="https://mail.google.com" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2"
