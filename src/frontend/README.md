@@ -19,7 +19,6 @@ A React + TypeScript application for generating AI caricatures from photos, buil
 - **UI Components**: shadcn/ui (Radix primitives)
 - **State Management**: React Query + Context
 - **Icons**: Lucide React + React Icons
-- **Backend**: Internet Computer (Motoko)
 
 ## Project Structure
 

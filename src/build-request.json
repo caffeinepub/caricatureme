@@ -1,57 +1,100 @@
 {
   "kind": "build_request",
-  "title": "Open Google button directly to Gmail + deliver full project source",
+  "title": "Align React frontend generation flow with provided final index.html (style picker, status text, download PNG)",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-28",
-      "text": "Update the \"Continue with Google\" link/button on the Login/Signup screen so clicking it opens Gmail directly (https://mail.google.com) in a new tab instead of opening the Google Account signup page.",
+      "id": "REQ-1",
+      "text": "Update the Art Style dropdown to match the provided final HTML options/labels: render a select with id \"styleSelect\" and options that submit these exact values: \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\"; and display option text as \"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\" respectively.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages"
+          "msg-3"
         ],
         "quotes": [
-          "it to going to google account and asking to create email account. instead it should go to the gmail account directly",
-          "it should go to the gmail account directly",
-          "(https://mail.google.com) or Gmail login"
+          "<select id=\"styleSelect\">",
+          "<option value=\"3D Pixar\">3D Pixar Mode</option>",
+          "<option value=\"Cyberpunk Neon\">Cyberpunk Neon</option>",
+          "<option value=\"Pencil Sketch\">Pencil Sketch</option>",
+          "<option value=\"Renaissance Oil\">Oil Painting</option>"
         ]
       },
       "acceptanceCriteria": [
-        "On AuthScreen, the anchor used by the \"Continue with Google\" button no longer points to https://accounts.google.com/signup.",
-        "Clicking the button opens https://mail.google.com in a new browser tab (target=\"_blank\") with rel=\"noopener noreferrer\" preserved.",
-        "The button text remains \"Continue with Google\" (use existing i18n key continue_with_google; do not add or change translations)."
+        "The style select element in the React UI has id=\"styleSelect\".",
+        "Selecting each option results in the style value sent to the generation request being exactly one of: \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\".",
+        "The visible option labels match exactly: \"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\"."
       ]
     },
     {
-      "id": "REQ-29",
-      "text": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
-      "target": "both",
+      "id": "REQ-2",
+      "text": "Update the generation UI behavior to match the provided final HTML: when the user clicks \"Generate My Caricature\", show inline status text \"Processing... (Please wait ~20s)\", clear any previously displayed output image, and hide the Download button until generation succeeds.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages"
+          "msg-3"
         ],
         "quotes": [
-          "provide the source code",
-          "the full project"
+          "status.innerText = \"Processing... (Please wait ~20s)\";",
+          "output.src = \"\";",
+          "dlBtn.style.display = \"none\";",
+          "<button onclick=\"generate()\">Generate My Caricature</button>"
         ]
       },
       "acceptanceCriteria": [
-        "The delivered output includes the complete frontend and backend directories (including configuration files like frontend/.env.example) needed to run/build the app.",
-        "No files are omitted that are required to install dependencies and start the app using the project’s existing tooling.",
-        "The included source matches the implemented change where the Google button opens https://mail.google.com."
+        "On generate start, the UI shows \"Processing... (Please wait ~20s)\" exactly (English) in the status area.",
+        "On generate start, any previously shown generated image preview is cleared.",
+        "On generate start, the Download button is not visible."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "On successful generation, display inline status text \"Success!\" and show a \"Download PNG\" button that downloads the generated result using a timestamp-based filename in the format \"caricature_<timestamp>.png\".",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "status.innerText = \"Success!\";",
+          "<button id=\"dlBtn\" style=\"display:none;\" onclick=\"downloadImage()\">Download PNG</button>",
+          "link.download = `caricature_${Date.now()}.png`;"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After a successful generation, the UI shows \"Success!\" exactly (English) in the status area.",
+        "After a successful generation, a \"Download PNG\" button becomes visible.",
+        "Clicking \"Download PNG\" downloads a PNG file named like \"caricature_<timestamp>.png\" (timestamp-based)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "On generation failure, display an inline error message prefixed with \"Error: \" (in English) in the status area, and ensure the Download button remains hidden.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "} catch (err) {",
+          "status.innerText = \"Error: \" + err.message;",
+          "dlBtn.style.display = \"none\";"
+        ]
+      },
+      "acceptanceCriteria": [
+        "If the caricature API request fails, the status area displays text that starts with \"Error: \" followed by an error message.",
+        "After a failed generation attempt, the Download button is not visible."
       ]
     }
   ],
   "constraints": [
-    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
-    "Use English for any new user-facing text; do not modify existing translation values for existing i18n keys.",
-    "Backend must remain a single Motoko actor in backend/main.mo; only introduce migration.mo if an actual state upgrade is required."
+    "Do not edit files in frontend immutablePaths (e.g., frontend/src/main.tsx, frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/components/ui).",
+    "Keep the caricature API request as a multipart/form-data POST with fields named exactly \"image\" and \"style\".",
+    "Use English for any newly introduced user-facing text tied to this change (status strings, button label), matching the provided final HTML text exactly where specified."
   ],
   "nonGoals": [
-    "Implementing real Google OAuth / \"Sign in with Google\" authentication flow.",
-    "Any changes to payment, generation, pricing, routing, theming, or i18n beyond what is necessary to change the external link destination.",
-    "Using the uploaded screenshot (image-1.png) in the app UI unless explicitly requested."
+    "Do not implement or change backend caricature generation logic in Motoko as part of this request.",
+    "Do not add new authentication providers or third-party integrations.",
+    "Do not redesign unrelated screens (landing/auth/payment) beyond what’s necessary to match the requested generation/status/download behavior."
   ],
   "imageRequirements": {
     "required": [],

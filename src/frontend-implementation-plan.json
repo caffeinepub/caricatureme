@@ -1,37 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update Google button to open Gmail and ensure frontend source is export-ready",
+  "title": "Match React generation flow to final HTML (style select, inline status, download PNG)",
   "requirements": [
     {
-      "id": "REQ-28",
-      "summary": "Change the AuthScreen \"Continue with Google\" button to open Gmail (https://mail.google.com) in a new tab while keeping existing i18n text and security rel attributes.",
+      "id": "REQ-1",
+      "summary": "Align Art Style dropdown id and option values/labels with the provided final HTML.",
       "acceptanceCriteria": [
-        "On AuthScreen, the anchor used by the \"Continue with Google\" button no longer points to https://accounts.google.com/signup.",
-        "Clicking the button opens https://mail.google.com in a new browser tab (target=\"_blank\") with rel=\"noopener noreferrer\" preserved.",
-        "The button text remains \"Continue with Google\" (use existing i18n key continue_with_google; do not add or change translations)."
+        "The style select element in the React UI has id=\"styleSelect\".",
+        "Selecting each option results in the style value sent to the generation request being exactly one of: \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\".",
+        "The visible option labels match exactly: \"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\"."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/screens/AuthScreen.tsx",
+          "path": "frontend/src/components/ArtStyleSelect.tsx",
           "operation": "modify",
-          "description": "Update the \"Continue with Google\" anchor href to https://mail.google.com while preserving target=\"_blank\", rel=\"noopener noreferrer\", and the existing i18n key usage (continue_with_google)."
+          "description": "Update the <select> options so option values remain exactly \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\" while the visible labels match the final HTML (\"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\"); keep id=\"styleSelect\" unchanged."
         }
       ]
     },
     {
-      "id": "REQ-29",
-      "summary": "Ensure the frontend portion of the project is included and buildable in the delivered full-project source export, reflecting the Gmail-link change.",
+      "id": "REQ-2",
+      "summary": "On generate start, show the exact processing status text, clear any previous output image, and hide the Download button until success.",
       "acceptanceCriteria": [
-        "The delivered output includes the complete frontend and backend directories (including configuration files like frontend/.env.example) needed to run/build the app.",
-        "No files are omitted that are required to install dependencies and start the app using the project’s existing tooling.",
-        "The included source matches the implemented change where the Google button opens https://mail.google.com."
+        "On generate start, the UI shows \"Processing... (Please wait ~20s)\" exactly (English) in the status area.",
+        "On generate start, any previously shown generated image preview is cleared.",
+        "On generate start, the Download button is not visible."
       ],
       "file_operations": [
         {
-          "path": "frontend/README.md",
-          "operation": "create",
-          "description": "Add concise frontend run/build instructions and a note that the AuthScreen \"Continue with Google\" button opens https://mail.google.com, to support delivering a complete, buildable project source bundle."
+          "path": "frontend/src/features/generation/useCaricatureGeneration.ts",
+          "operation": "modify",
+          "description": "Adjust the generate() return value to include the generated image URL and a timestamp on success (while preserving the multipart/form-data POST with fields named exactly \"image\" and \"style\"), so the UI can clear/show preview and drive timestamp-based downloads."
+        },
+        {
+          "path": "frontend/src/screens/UploadPhotoScreen.tsx",
+          "operation": "modify",
+          "description": "Update generation start behavior to: set inline status text to exactly \"Processing... (Please wait ~20s)\", clear any previously displayed generated image preview state, and ensure the \"Download PNG\" button is hidden/disabled until generation succeeds."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "On successful generation, show \"Success!\" and reveal a Download PNG button that downloads with a timestamp-based filename.",
+      "acceptanceCriteria": [
+        "After a successful generation, the UI shows \"Success!\" exactly (English) in the status area.",
+        "After a successful generation, a \"Download PNG\" button becomes visible.",
+        "Clicking \"Download PNG\" downloads a PNG file named like \"caricature_<timestamp>.png\" (timestamp-based)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/screens/UploadPhotoScreen.tsx",
+          "operation": "modify",
+          "description": "After generate() success, set inline status text to exactly \"Success!\", render the generated output image preview, and show a \"Download PNG\" button that uses the existing download helper to download the generated image with filename format \"caricature_<timestamp>.png\" based on a timestamp (e.g., Date.now())."
+        },
+        {
+          "path": "frontend/src/screens/ResultScreen.tsx",
+          "operation": "modify",
+          "description": "Align the download filename generation to be timestamp-based at click time (e.g., using Date.now()) and ensure the visible button label remains exactly \"Download PNG\" where applicable."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "On generation failure, show an inline \"Error: ...\" status message and keep Download hidden.",
+      "acceptanceCriteria": [
+        "If the caricature API request fails, the status area displays text that starts with \"Error: \" followed by an error message.",
+        "After a failed generation attempt, the Download button is not visible."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/screens/UploadPhotoScreen.tsx",
+          "operation": "modify",
+          "description": "Replace toast-only failure handling with inline status text that starts with exactly \"Error: \" followed by the returned error message, and ensure the Download button remains hidden when generation fails."
+        },
+        {
+          "path": "frontend/src/features/generation/useCaricatureGeneration.ts",
+          "operation": "modify",
+          "description": "Ensure generate() surfaces a clear error string (used by the UI for the \"Error: <message>\" status) while keeping the request format as multipart/form-data with fields named exactly \"image\" and \"style\"."
         }
       ]
     }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { type GenerationResult, type GenerationInput } from './generationState';
-import { env, isCaricatureApiConfigured } from '../../config/env';
+import { env } from '../../config/env';
+
+const DEFAULT_STYLE = '3D Pixar';
 
 export function useCaricatureGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -8,7 +10,8 @@ export function useCaricatureGeneration() {
 
   const generate = async (
     photoDataUrl: string,
-    photoFilename?: string
+    photoFilename?: string,
+    style?: string
   ): Promise<{ success: boolean; error?: string }> => {
     if (!photoDataUrl) {
       return { success: false, error: 'No photo provided' };
@@ -18,131 +21,127 @@ export function useCaricatureGeneration() {
     setError(null);
 
     try {
+      // Convert data URL to blob
+      const response = await fetch(photoDataUrl);
+      const imageBlob = await response.blob();
+
+      // Create a File object with proper filename
+      const filename = photoFilename || 'photo.jpg';
+      const imageFile = new File([imageBlob], filename, { type: imageBlob.type || 'image/jpeg' });
+
+      const formData = new FormData();
+      // Append as 'image' field with filename (matches expected multipart field name)
+      formData.append("image", imageFile);
+      
+      // Always append style field (use default if not provided)
+      const selectedStyle = style || DEFAULT_STYLE;
+      formData.append("style", selectedStyle);
+
+      const apiUrl = env.caricatureApi.url;
+      
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Caricature generation failed with status ${res.status}`);
+      }
+
+      const contentType = res.headers.get('Content-Type') || '';
       let imageUrl: string;
 
-      // If API is configured, attempt to use it
-      if (isCaricatureApiConfigured()) {
-        try {
-          const apiResult = await generateViaApi(photoDataUrl);
-          if (apiResult.success && apiResult.imageUrl) {
-            imageUrl = apiResult.imageUrl;
-          } else {
-            // API failed, fall back to placeholder
-            console.warn('API generation failed, falling back to placeholder');
-            imageUrl = await generatePlaceholder();
-          }
-        } catch (apiError) {
-          // API error, fall back to placeholder
-          console.warn('API error, falling back to placeholder:', apiError);
-          imageUrl = await generatePlaceholder();
-        }
+      // Handle binary image response
+      if (contentType.startsWith('image/')) {
+        const imageBlob = await res.blob();
+        // Convert blob to data URL for reliable display and storage
+        imageUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(imageBlob);
+        });
       } else {
-        // No API configured, use placeholder
-        imageUrl = await generatePlaceholder();
+        // Handle JSON response
+        const data = await res.json();
+        
+        // Extract image from various possible response formats
+        if (data.imageUrl) {
+          imageUrl = data.imageUrl;
+        } else if (data.image) {
+          // Handle base64 with or without data URL prefix
+          if (data.image.startsWith('data:')) {
+            imageUrl = data.image;
+          } else {
+            // Assume base64 without prefix
+            imageUrl = `data:image/jpeg;base64,${data.image}`;
+          }
+        } else {
+          throw new Error('Invalid API response: no image data found');
+        }
       }
 
       const result: GenerationResult = {
         photoDataUrl,
         photoFilename,
+        style: selectedStyle,
         imageUrl,
         timestamp: Date.now(),
       };
 
       // Store both result and input
       localStorage.setItem('caricature_result', JSON.stringify(result));
-      localStorage.setItem('caricature_input', JSON.stringify({ photoDataUrl, photoFilename } as GenerationInput));
+      localStorage.setItem('caricature_input', JSON.stringify({ 
+        photoDataUrl, 
+        photoFilename,
+        style: selectedStyle
+      } as GenerationInput));
       
       setIsGenerating(false);
       return { success: true };
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Generation failed';
+      let errorMessage = 'Generation failed';
+      
+      // Detect network/fetch errors and provide actionable message
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        errorMessage = `Unable to reach the caricature API at ${env.caricatureApi.url}. Please verify:\n1. The API endpoint is accessible\n2. CORS is properly configured\n3. The server is accepting connections`;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       setIsGenerating(false);
       return { success: false, error: errorMessage };
     }
   };
 
-  const generatePlaceholder = async (): Promise<string> => {
-    // Simulate generation delay (3-5 seconds)
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
-    // Generate Dicebear avatar URL using timestamp as seed
-    const seed = encodeURIComponent(`photo-${Date.now()}`);
-    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
-  };
-
-  const generateViaApi = async (photoDataUrl: string): Promise<{ success: boolean; imageUrl?: string; error?: string }> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    const apiUrl = env.caricatureApi.url;
-    const apiKey = env.caricatureApi.key;
-
-    // Convert data URL to blob
-    const response = await fetch(photoDataUrl);
-    const blob = await response.blob();
-
-    // Prepare form data
-    const formData = new FormData();
-    formData.append('image', blob, 'photo.jpg');
-
-    // Make API request
-    const headers: HeadersInit = {};
-    if (apiKey) {
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    }
-
-    const apiResponse = await fetch(apiUrl, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
-
-    if (!apiResponse.ok) {
-      throw new Error(`API request failed with status ${apiResponse.status}`);
-    }
-
-    const result = await apiResponse.json();
-
-    // Parse API response - adjust based on your API's response format
-    // Expected format: { success: true, imageUrl: "https://..." }
-    // or { success: true, image: "base64..." }
-    if (result.imageUrl) {
-      return { success: true, imageUrl: result.imageUrl };
-    } else if (result.image) {
-      // If API returns base64, convert to data URL
-      const imageUrl = result.image.startsWith('data:') 
-        ? result.image 
-        : `data:image/jpeg;base64,${result.image}`;
-      return { success: true, imageUrl };
-    } else {
-      return { success: false, error: 'Invalid API response format' };
-    }
-  };
-
   const getResult = (): GenerationResult | null => {
     try {
-      const data = localStorage.getItem('caricature_result');
-      return data ? JSON.parse(data) : null;
+      const stored = localStorage.getItem('caricature_result');
+      if (!stored) return null;
+      return JSON.parse(stored) as GenerationResult;
     } catch {
       return null;
     }
+  };
+
+  const clearResult = () => {
+    localStorage.removeItem('caricature_result');
+    localStorage.removeItem('caricature_input');
   };
 
   const getStoredInput = (): GenerationInput | null => {
     try {
-      const data = localStorage.getItem('caricature_input');
-      return data ? JSON.parse(data) : null;
+      const stored = localStorage.getItem('caricature_input');
+      if (!stored) return null;
+      return JSON.parse(stored) as GenerationInput;
     } catch {
       return null;
     }
   };
 
-  const clearAttempt = () => {
-    localStorage.removeItem('caricature_result');
-    localStorage.removeItem('caricature_input');
-    localStorage.removeItem('caricature_paid');
-    setError(null);
+  const saveInput = (input: GenerationInput) => {
+    localStorage.setItem('caricature_input', JSON.stringify(input));
   };
 
   return {
@@ -150,7 +149,9 @@ export function useCaricatureGeneration() {
     isGenerating,
     error,
     getResult,
+    clearResult,
+    clearAttempt: clearResult, // Alias for backward compatibility
     getStoredInput,
-    clearAttempt,
+    saveInput,
   };
 }

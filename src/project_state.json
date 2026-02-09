@@ -1,237 +1,46 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
-  "summary": "CaricatureMe: simplified MVP single-page web app (single index.html) that lets users sign up/login, upload/capture a photo, pay ~₹50 (mock or Razorpay), generate a caricature (currently placeholder; plan to support semi-realistic photo-based generation via a user-provided API), and download it, with a 4-screen flow plus language and dark/light theme toggles.",
+  "projectStateVersion": 3,
+  "summary": "Web frontend (index.html) for generating AI caricatures: user selects an art style, submits a captured image to a backend /caricature endpoint, displays the returned image, and enables PNG download.",
   "architectural_notes": [
-    "MVP to be delivered as a single self-contained index.html with embedded CSS and inline JS; page navigation via show/hide (no frameworks/build tools).",
-    "Use localStorage for users/session (demo authentication), plus storing theme, language, and payment state.",
-    "Payments: support mock payment flow; optionally integrate Razorpay for INR payments.",
-    "Caricature generation: start with placeholder image generation (Dicebear); later swap to real AI API using provided prompt template.",
-    "Price display may use IP geolocation (ipapi.co) to choose currency and show fixed equivalent amounts.",
-    "UI change: do not show localized price on Landing; display price on Input & Payment screen before user clicks Generate/Pay. Use Landing space for imagery instead.",
-    "Input change: remove/replace the text-based Input Details form; collect a user photo via file upload and/or camera (getUserMedia) and keep the image data client-side (e.g., as a data URL or Blob) for the generation placeholder pipeline.",
-    "Razorpay official Checkout script URL: https://checkout.razorpay.com/v1/checkout.js",
-    "Plan to introduce a .env/config mechanism to store keys (e.g., Razorpay key, future AI API endpoint/key) rather than hardcoding secrets in index.html."
+    "Frontend sends multipart/form-data with fields { image: capturedBlob, style } to POST http://localhost:3001/caricature and expects an image blob response.",
+    "Frontend stores latest generated image in currentBlob and renders via URL.createObjectURL; download uses an <a> link to save PNG."
   ],
   "known_issues": [
-    "Language requirements are inconsistent: spec lists 10 supported languages, but MVP deliverable/checklist calls for only 3 languages (English/Hindi/Spanish).",
-    "Current caricature output is unrealistic because the placeholder generator (Dicebear) does not use/analyze the uploaded photo; users expect photo-based generation."
+    "Frontend references capturedBlob but its capture/acquisition is not defined in the provided index.html snippet (generation will fail unless set elsewhere).",
+    "Using a hardcoded backend URL (http://localhost:3001) may require CORS configuration and breaks when deployed to non-localhost environments."
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-implement-a-single-page-app-flow-with-four-screens-landing-login-signup-input-payment-result-and-client-side-navigation-state-so-users-can-complete-the-full-journey-without-page-reloads",
-      "title": "Implement a single-page app flow with four screens (Landing → Login/Signup → Input & Payment → Result) and client-side navigation/state so users can complete the full journey without page reloads.",
+      "id": "feature-update-the-art-style-dropdown-to-match-the-provided-final-html-options-labels-render-a-select-with-id-styleselect-and-options-that-submit-these-exact-values-3d-pixar-cyberpunk-neon-pencil-sketch-renaissance-oil-and-display-option-text-as-3d-pixar-mode-cyberpunk-neon-pencil-sketch-oil-painting-respectively",
+      "title": "Update the Art Style dropdown to match the provided final HTML options/labels: render a select with id \"styleSelect\" and options that submit these exact values: \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\"; and display option text as \"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\" respectively.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-build-the-landing-screen-with-a-hero-section-showing-the-app-name-caricatureme-a-tagline-a-get-started-cta-a-price-display-that-adapts-to-detected-region-and-a-gallery-of-2-3-example-caricature-images",
-      "title": "Build the Landing screen with a hero section showing the app name “CaricatureMe”, a tagline, a “Get Started” CTA, a price display that adapts to detected region, and a gallery of 2–3 example caricature images.",
+      "id": "feature-update-the-generation-ui-behavior-to-match-the-provided-final-html-when-the-user-clicks-generate-my-caricature-show-inline-status-text-processing-please-wait-20s-clear-any-previously-displayed-output-image-and-hide-the-download-button-until-generation-succeeds",
+      "title": "Update the generation UI behavior to match the provided final HTML: when the user clicks \"Generate My Caricature\", show inline status text \"Processing... (Please wait ~20s)\", clear any previously displayed output image, and hide the Download button until generation succeeds.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-login-signup-ui-with-tabs-for-login-and-sign-up-fields-for-email-and-password-and-a-remember-me-checkbox-persist-demo-user-accounts-and-session-state-in-localstorage-as-described",
-      "title": "Implement Login/Signup UI with tabs for “Login” and “Sign Up”, fields for Email and Password, and a “Remember Me” checkbox; persist demo user accounts and session state in localStorage as described.",
+      "id": "feature-on-successful-generation-display-inline-status-text-success-and-show-a-download-png-button-that-downloads-the-generated-result-using-a-timestamp-based-filename-in-the-format-caricature-timestamp-png",
+      "title": "On successful generation, display inline status text \"Success!\" and show a \"Download PNG\" button that downloads the generated result using a timestamp-based filename in the format \"caricature_<timestamp>.png\".",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-the-input-payment-screen-with-a-form-that-collects-name-job-profession-appearance-description-enforce-50-200-characters-and-art-style-cartoon-comic-anime-watercolor-display-the-localized-price-and-provide-a-generate-my-caricature-button-that-initiates-payment-then-generation",
-      "title": "Create the Input & Payment screen with a form that collects Name, Job/Profession, Appearance Description (enforce 50–200 characters), and Art Style (Cartoon, Comic, Anime, Watercolor). Display the localized price and provide a “Generate My Caricature” button that initiates payment then generation.",
+      "id": "feature-on-generation-failure-display-an-inline-error-message-prefixed-with-error-in-english-in-the-status-area-and-ensure-the-download-button-remains-hidden",
+      "title": "On generation failure, display an inline error message prefixed with \"Error: \" (in English) in the status area, and ensure the Download button remains hidden.",
       "reqIds": [
         "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-payment-step-for-the-50-equivalent-using-a-mock-payment-flow-by-default-show-a-minimal-payment-form-allow-the-user-to-click-pay-wait-2-seconds-mark-the-session-order-as-paid-in-localstorage-then-proceed-to-caricature-generation-include-an-optional-razorpay-integration-placeholder-that-is-disabled-unless-a-key-is-provided",
-      "title": "Implement a payment step for the ₹50 equivalent using a mock payment flow by default: show a minimal payment form, allow the user to click “Pay”, wait ~2 seconds, mark the session/order as paid in localStorage, then proceed to caricature generation. Include an optional Razorpay integration placeholder that is disabled unless a key is provided.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-currency-detection-and-display-logic-call-https-ipapi-co-json-to-determine-user-region-and-display-fixed-equivalents-india-50-usa-0-60-europe-0-55-uk-0-50-others-0-60-if-detection-fails-fall-back-to-0-60-or-50-as-a-safe-default",
-      "title": "Add currency detection and display logic: call `https://ipapi.co/json/` to determine user region and display fixed equivalents (India ₹50, USA $0.60, Europe €0.55, UK £0.50, Others $0.60). If detection fails, fall back to $0.60 or ₹50 as a safe default.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-caricature-generation-with-a-loading-state-3-5-seconds-and-a-placeholder-avatar-api-use-dicebear-https-api-dicebear-com-7-x-avataaars-svg-seed-name-as-the-initial-generator-and-store-the-generated-image-url-and-the-user-s-input-so-the-result-screen-can-render-it-after-payment",
-      "title": "Implement caricature generation with a loading state (3–5 seconds) and a placeholder avatar API. Use Dicebear `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` as the initial generator, and store the generated image URL (and the user’s input) so the Result screen can render it after payment.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-the-result-screen-to-display-the-generated-caricature-and-provide-1-a-prominent-download-button-that-saves-the-image-as-png-and-2-a-create-another-button-that-returns-to-the-input-payment-screen",
-      "title": "Build the Result screen to display the generated caricature and provide: (1) a prominent “Download” button that saves the image as PNG, and (2) a “Create Another” button that returns to the Input & Payment screen.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-top-right-language-selector-with-flags-icons-supporting-10-languages-english-hindi-spanish-french-german-portuguese-arabic-chinese-japanese-russian-persist-selection-in-localstorage-and-translate-the-specified-key-ui-strings-using-exactly-the-provided-translations",
-      "title": "Add a top-right language selector (with flags/icons) supporting 10 languages (English, Hindi, Spanish, French, German, Portuguese, Arabic, Chinese, Japanese, Russian). Persist selection in localStorage and translate the specified key UI strings using exactly the provided translations.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-dark-light-mode-toggle-sun-moon-icon-next-to-the-language-selector-persist-the-theme-in-localstorage-and-implement-the-specified-light-and-dark-palettes-including-dark-background-1a1a1a-and-dark-card-color-2d2d2d-with-smooth-transitions",
-      "title": "Add a dark/light mode toggle (sun/moon icon) next to the language selector. Persist the theme in localStorage and implement the specified light and dark palettes, including dark background (#1a1a1a) and dark card color (#2d2d2d), with smooth transitions.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-the-requested-visual-design-system-across-all-screens-purple-to-pink-primary-gradient-667eea-to-764ba2-centered-max-width-500px-layout-16px-rounded-cards-subtle-shadows-system-font-stack-responsive-behavior-from-320px-to-1920px-and-consistent-button-styles",
-      "title": "Apply the requested visual design system across all screens: purple-to-pink primary gradient (#667eea to #764ba2), centered max-width 500px layout, 16px rounded cards, subtle shadows, system font stack, responsive behavior from 320px to 1920px, and consistent button styles.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-basic-route-guards-and-persistence-rules-block-access-to-input-payment-and-result-when-not-logged-in-on-refresh-restore-theme-language-session-from-storage-ensure-no-paid-result-state-leaks-across-users-or-new-sessions",
-      "title": "Implement basic route guards and persistence rules: block access to Input/Payment and Result when not logged in; on refresh, restore theme/language/session from storage; ensure no paid/result state leaks across users or new sessions.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-required-static-example-images-as-build-time-assets-and-render-them-on-the-landing-screen-without-fetching-them-through-the-backend",
-      "title": "Add required static example images as build-time assets and render them on the Landing screen without fetching them through the backend.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-clearly-visible-continue-with-google-link-button-on-the-login-signup-screen-that-opens-google-account-signup-in-a-new-tab-https-accounts-google-com-signup",
-      "title": "Add a clearly visible \"Continue with Google\" link/button on the Login/Signup screen that opens Google Account signup in a new tab (https://accounts.google.com/signup).",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-localized-price-display-from-the-landing-screen-so-no-price-currency-amount-is-shown-on-the-landing-page",
-      "title": "Remove the localized price display from the Landing screen so no price/currency amount is shown on the Landing page.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-replace-the-removed-landing-price-area-with-a-new-visually-appealing-static-image-on-the-landing-screen",
-      "title": "Replace the removed Landing price area with a new visually appealing static image on the Landing screen.",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-text-based-input-details-form-from-the-input-payment-screen-and-replace-it-with-a-photo-based-input-flow-that-lets-the-user-either-a-upload-an-image-from-their-device-or-b-capture-a-photo-using-the-device-camera-when-supported-by-the-browser",
-      "title": "Remove the text-based input details form from the Input & Payment screen and replace it with a photo-based input flow that lets the user either (a) upload an image from their device or (b) capture a photo using the device camera (when supported by the browser).",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-generation-data-model-and-local-persistence-so-that-a-selected-captured-photo-is-stored-as-the-primary-generation-input-for-the-current-attempt-and-ensure-attempt-state-is-cleared-appropriately-when-starting-over",
-      "title": "Update the generation data model and local persistence so that a selected/captured photo is stored as the primary generation input for the current attempt, and ensure attempt state is cleared appropriately when starting over.",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-adjust-the-caricature-generation-flow-to-work-with-photo-input-after-successful-payment-trigger-generation-using-the-uploaded-captured-photo-as-the-source-input-while-keeping-the-existing-placeholder-generation-behavior-3-5-second-loading-simulation-and-placeholder-image-output-until-a-real-image-to-caricature-generator-is-implemented",
-      "title": "Adjust the caricature generation flow to work with photo input: after successful payment, trigger generation using the uploaded/captured photo as the source input, while keeping the existing placeholder generation behavior (3–5 second loading simulation and placeholder image output) until a real image-to-caricature generator is implemented.",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-result-screen-ui-to-reflect-the-new-photo-based-input-remove-or-hide-the-now-obsolete-user-metadata-display-that-depends-on-name-job-art-style-and-optionally-show-a-small-thumbnail-preview-of-the-uploaded-captured-source-photo-if-available",
-      "title": "Update the Result screen UI to reflect the new photo-based input: remove (or hide) the now-obsolete user metadata display that depends on Name/Job/Art Style, and optionally show a small thumbnail/preview of the uploaded/captured source photo if available.",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-any-new-user-facing-strings-needed-for-the-photo-upload-camera-capture-flow-to-the-i18n-system-without-modifying-existing-translation-values-for-current-keys-any-missing-translations-for-new-keys-should-fall-back-to-english",
-      "title": "Add any new user-facing strings needed for the photo upload/camera capture flow to the i18n system without modifying existing translation values for current keys; any missing translations for new keys should fall back to English.",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-frontend-environment-configuration-layer-using-a-env-file-that-the-user-can-update-including-committing-a-safe-example-template-file-e-g-env-example-with-placeholder-values-for-all-supported-keys",
-      "title": "Add a frontend environment-configuration layer using a .env file that the user can update, including committing a safe example template file (e.g., .env.example) with placeholder values for all supported keys.",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-environment-variable-access-in-the-frontend-so-it-works-in-the-current-react-build-tooling-do-not-use-process-env-in-browser-code-ensure-razorpay-placeholder-initialization-reads-the-configured-key-from-the-environment-and-remains-disabled-when-the-key-is-not-set",
-      "title": "Fix environment variable access in the frontend so it works in the current React build tooling (do not use process.env in browser code). Ensure Razorpay placeholder initialization reads the configured key from the environment and remains disabled when the key is not set.",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-support-for-a-user-provided-semi-realistic-image-to-caricature-rest-api-configured-via-env-and-update-the-generation-hook-to-call-it-when-configured-the-api-call-must-send-the-uploaded-captured-photo-as-the-source-input-and-use-the-api-response-as-the-generated-image-result-if-the-api-is-not-configured-or-the-call-fails-fall-back-to-the-existing-placeholder-generation-behavior-3-5-second-delay-dicebear-image-url",
-      "title": "Add support for a user-provided semi-realistic image-to-caricature REST API configured via .env, and update the generation hook to call it when configured. The API call must send the uploaded/captured photo as the source input and use the API response as the generated image result; if the API is not configured or the call fails, fall back to the existing placeholder generation behavior (3–5 second delay + Dicebear image URL).",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-any-new-user-facing-error-help-text-introduced-by-the-new-env-configured-api-integration-is-in-english-and-if-added-to-i18n-defaults-falls-back-to-english-for-missing-translations",
-      "title": "Ensure any new user-facing error/help text introduced by the new .env-configured API integration is in English (and, if added to i18n, defaults/falls back to English for missing translations).",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-continue-with-google-link-button-on-the-login-signup-screen-so-clicking-it-opens-gmail-directly-https-mail-google-com-in-a-new-tab-instead-of-opening-the-google-account-signup-page",
-      "title": "Update the \"Continue with Google\" link/button on the Login/Signup screen so clicking it opens Gmail directly (https://mail.google.com) in a new tab instead of opening the Google Account signup page.",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-provide-export-the-full-project-source-code-as-a-complete-buildable-project-frontend-backend-reflecting-the-gmail-link-change",
-      "title": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
-      "reqIds": [
-        "REQ-29"
       ],
       "version": 1
     }
@@ -239,119 +48,30 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Single-file (index.html) MVP with 4-page flow: Landing → Login/Signup → Input & Payment → Result, using show/hide navigation",
+      "summary": "Add style picker UI with predefined styles for caricature generation (3D Pixar, Cyberpunk Neon, Pencil Sketch, Renaissance Oil)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Landing page with hero, Get Started CTA, 2–3 example images, and price display with location-based currency",
+      "summary": "Implement Generate flow: POST captured image + selected style to backend (/caricature) and display returned image blob",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Email/password login + signup with Remember Me using localStorage (demo auth/session)",
+      "summary": "Add Download PNG button to save the generated caricature image",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-5",
-      "summary": "Payment flow charging ~₹50 (mock payment for testing and optional Razorpay integration); store paid state in localStorage",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Currency detection/conversion for displaying price by region (via ipapi.co lookup and fixed equivalents)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Caricature generation step with loading animation; use placeholder avatar API (Dicebear) initially with prompt template for future real AI",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Result page displaying generated image with Download as PNG and Create Another actions",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Language selector UI stored in localStorage (targeting multi-language; MVP deliverable mentions at least English/Hindi/Spanish)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Dark/light mode toggle with stored preference in localStorage and specified design system (gradient, cards, responsive layout)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Keep the backend minimal: do not implement real email/password authentication or payment processing in Motoko for this MVP; the app should function using frontend localStorage and external placeholder APIs only.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-24",
-      "summary": "Add a “Sign up with Google” option/link on the Login/Signup screen (Google signup link/button UI)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-25",
-      "summary": "Move localized price display off the Landing screen and show it on the Input & Payment (pre-generation) screen instead; replace Landing price area with an image/visual so the Landing layout looks better",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-27",
-      "summary": "Ensure the localized price is displayed on the Input & Payment flow before caricature generation (i.e., on the Input & Payment screen prior to starting generation), using the existing regional pricing logic.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-28",
-      "summary": "Replace/remove the text-based Input Details form and instead add a photo upload or camera capture feature (upload from device or take a picture) as the main input before payment/generation",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-29",
-      "summary": "Support semi-realistic caricature generation that uses the uploaded/captured photo as the direct input by integrating a user-provided image-to-caricature API (replacing/augmenting the Dicebear placeholder).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-30",
-      "summary": "Add a .env-based configuration structure for secrets/keys (e.g., Razorpay key and future AI API endpoint/key) and update the app to read config accordingly.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-31",
-      "summary": "Change the \"Continue with Google\" link/button behavior so it opens Gmail directly (like other apps) instead of the Google Account creation page",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-32",
-      "summary": "Provide/export the full project source code (complete project, not just individual files)",
+      "id": "AR-4",
+      "summary": "Add user status messaging for processing/success/error during caricature generation",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "CaricatureMe",
+  "projectName": "Align React frontend generation flow with provided final index.html (style picker, status text, download PNG)",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

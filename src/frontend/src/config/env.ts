@@ -18,12 +18,21 @@ function getEnvVar(key: string): string {
   return '';
 }
 
+// Get caricature API URL with default to same-origin /caricature route
+function getCaricatureApiUrl(): string {
+  const configuredUrl = getEnvVar('VITE_CARICATURE_API_URL');
+  // If URL is set and non-empty, use it; otherwise default to same-origin /caricature
+  return configuredUrl && configuredUrl.trim().length > 0 
+    ? configuredUrl 
+    : '/caricature';
+}
+
 export const env: EnvConfig = {
   razorpay: {
     key: getEnvVar('VITE_RAZORPAY_KEY'),
   },
   caricatureApi: {
-    url: getEnvVar('VITE_CARICATURE_API_URL'),
+    url: getCaricatureApiUrl(),
     key: getEnvVar('VITE_CARICATURE_API_KEY'),
   },
 };

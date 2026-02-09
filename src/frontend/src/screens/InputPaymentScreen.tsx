@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { CreditCard, Loader2 } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import PhotoInput from '../components/PhotoInput';
+import ArtStyleSelect from '../components/ArtStyleSelect';
+import SuccessNotification from '../components/SuccessNotification';
 import { useI18n } from '../features/i18n/useI18n';
 import { useRegionalPrice } from '../features/pricing/useRegionalPrice';
 import { useMockPayment } from '../features/payment/useMockPayment';
@@ -16,22 +18,29 @@ interface InputPaymentScreenProps {
   onNavigate: () => void;
 }
 
+const DEFAULT_STYLE = '3D Pixar';
+
 export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenProps) {
   const { t } = useI18n();
   const { priceDisplay } = useRegionalPrice();
   const { processPayment, isProcessing: isPaymentProcessing } = useMockPayment();
-  const { generate, isGenerating, error: generationError, getStoredInput } = useCaricatureGeneration();
+  const { generate, isGenerating, getStoredInput, saveInput } = useCaricatureGeneration();
 
   const [photoDataUrl, setPhotoDataUrl] = useState<string>('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoFilename, setPhotoFilename] = useState<string | undefined>(undefined);
+  const [selectedStyle, setSelectedStyle] = useState<string>(DEFAULT_STYLE);
   const [showPayment, setShowPayment] = useState(false);
   const [cardNumber, setCardNumber] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState<null | 'success'>(null);
 
-  // Load stored photo if exists
+  // Load stored photo and style if exists
   useEffect(() => {
     const storedInput = getStoredInput();
     if (storedInput?.photoDataUrl) {
       setPhotoDataUrl(storedInput.photoDataUrl);
+      setPhotoFilename(storedInput.photoFilename);
+      setSelectedStyle(storedInput.style || DEFAULT_STYLE);
     }
   }, [getStoredInput]);
 
@@ -40,6 +49,25 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
   const handlePhotoSelected = (dataUrl: string, file: File) => {
     setPhotoDataUrl(dataUrl);
     setPhotoFile(file);
+    setPhotoFilename(file.name);
+    // Persist input when photo changes
+    saveInput({
+      photoDataUrl: dataUrl,
+      photoFilename: file.name,
+      style: selectedStyle,
+    });
+  };
+
+  const handleStyleChange = (style: string) => {
+    setSelectedStyle(style);
+    // Persist input when style changes
+    if (photoDataUrl) {
+      saveInput({
+        photoDataUrl,
+        photoFilename,
+        style,
+      });
+    }
   };
 
   const handleSubmitForm = (e: React.FormEvent) => {
@@ -54,32 +82,33 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous payment status
+    setPaymentStatus(null);
+    
     if (!photoDataUrl) {
       toast.error(t('photo_required_error'));
       return;
     }
 
-    const paymentSuccess = await processPayment();
+    // Payment always succeeds
+    await processPayment();
+    setPaymentStatus('success');
+    toast.success(t('payment_success'));
     
-    if (paymentSuccess) {
-      toast.success(t('payment_success'));
-      
-      // Generate caricature with photo
-      const result = await generate(photoDataUrl, photoFile?.name);
-      
-      if (result.success) {
-        toast.success(t('generation_success'));
-        onNavigate();
-      } else {
-        // Show error but don't block - fallback was used
-        if (result.error) {
-          toast.error(result.error);
-        } else {
-          toast.error(t('generation_error'));
-        }
-      }
+    // Generate caricature with photo, filename, and style
+    const filename = photoFile?.name || photoFilename;
+    const generationResult = await generate(photoDataUrl, filename, selectedStyle);
+    
+    if (generationResult.success) {
+      toast.success(t('generation_success'));
+      onNavigate();
     } else {
-      toast.error(t('payment_error'));
+      // Show error but don't block - fallback was used
+      if (generationResult.error) {
+        toast.error(generationResult.error);
+      } else {
+        toast.error(t('generation_error'));
+      }
     }
   };
 
@@ -108,6 +137,8 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
           <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             {t('payment')}
           </h2>
+
+          {paymentStatus === 'success' && <SuccessNotification />}
 
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl p-4 mb-6">
             <p className="text-sm text-muted-foreground mb-1">{t('total_amount')}</p>
@@ -206,6 +237,11 @@ export default function InputPaymentScreen({ onNavigate }: InputPaymentScreenPro
 
         <form onSubmit={handleSubmitForm} className="space-y-6">
           <PhotoInput onPhotoSelected={handlePhotoSelected} initialPhoto={photoDataUrl} />
+
+          <ArtStyleSelect
+            value={selectedStyle}
+            onChange={handleStyleChange}
+          />
 
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl p-4">
             <p className="text-sm text-muted-foreground mb-1">{t('price_label')}</p>

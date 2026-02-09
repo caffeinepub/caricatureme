@@ -1,20 +1,32 @@
 import { useState } from 'react';
 
+export async function processPayment() {
+  await new Promise(res => setTimeout(res, 1000));
+  // Always return success
+  return { success: true };
+}
+
 export function useMockPayment() {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const processPayment = async (): Promise<boolean> => {
+  const handleProcessPayment = async () => {
     setIsProcessing(true);
-    
-    // Simulate payment processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mark as paid
-    localStorage.setItem('caricature_paid', 'true');
-    
-    setIsProcessing(false);
-    return true;
+    try {
+      // Always succeeds - no error path
+      const result = await processPayment();
+      
+      // Mark as paid
+      localStorage.setItem('caricature_paid', 'true');
+      
+      return result;
+    } catch {
+      // Even if something unexpected happens, return success
+      localStorage.setItem('caricature_paid', 'true');
+      return { success: true };
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  return { processPayment, isProcessing };
+  return { processPayment: handleProcessPayment, isProcessing };
 }

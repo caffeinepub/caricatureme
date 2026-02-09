@@ -50,7 +50,7 @@ export default function LandingScreen({ onNavigate }: LandingScreenProps) {
 
           <div className="rounded-xl overflow-hidden shadow-lg">
             <img
-              src="/assets/generated/landing-hero.dim_1200x600.png"
+              src="/assets/caricature-1.jpeg"
               alt="CaricatureMe Hero"
               className="w-full h-auto object-cover"
             />

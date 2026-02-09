@@ -1,35 +1,61 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T15:47:15.539Z",
+  "generatedAt": "2026-02-09T09:23:44.823Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 4,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-28",
-        "summary": "Update the \"Continue with Google\" link/button on the Login/Signup screen so clicking it opens Gmail directly (https://mail.google.com) in a new tab instead of opening the Google Account signup page.",
+        "id": "REQ-1",
+        "summary": "Update the Art Style dropdown to match the provided final HTML options/labels: render a select with id \"styleSelect\" and options that submit these exact values: \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\"; and display option text as \"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\" respectively.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/screens/AuthScreen.tsx"
+          "frontend/src/components/ArtStyleSelect.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/screens/AuthScreen.tsx"
+          "frontend/src/components/ArtStyleSelect.tsx"
         ]
       },
       {
-        "id": "REQ-29",
-        "summary": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
+        "id": "REQ-2",
+        "summary": "Update the generation UI behavior to match the provided final HTML: when the user clicks \"Generate My Caricature\", show inline status text \"Processing... (Please wait ~20s)\", clear any previously displayed output image, and hide the Download button until generation succeeds.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/README.md"
+          "frontend/src/features/generation/useCaricatureGeneration.ts",
+          "frontend/src/screens/UploadPhotoScreen.tsx"
         ],
         "matchedFiles": [
-          "frontend/README.md"
+          "frontend/src/screens/UploadPhotoScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "On successful generation, display inline status text \"Success!\" and show a \"Download PNG\" button that downloads the generated result using a timestamp-based filename in the format \"caricature_<timestamp>.png\".",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/screens/UploadPhotoScreen.tsx",
+          "frontend/src/screens/ResultScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/screens/UploadPhotoScreen.tsx",
+          "frontend/src/screens/ResultScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "On generation failure, display an inline error message prefixed with \"Error: \" (in English) in the status area, and ensure the Download button remains hidden.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/screens/UploadPhotoScreen.tsx",
+          "frontend/src/features/generation/useCaricatureGeneration.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/screens/UploadPhotoScreen.tsx"
         ]
       }
     ]
@@ -39,8 +65,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/README.md",
-    "frontend/src/screens/AuthScreen.tsx",
+    "frontend/src/components/ArtStyleSelect.tsx",
+    "frontend/src/screens/ResultScreen.tsx",
+    "frontend/src/screens/UploadPhotoScreen.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

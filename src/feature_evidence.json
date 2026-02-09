@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-continue-with-google-link-button-on-the-login-signup-screen-so-clicking-it-opens-gmail-directly-https-mail-google-com-in-a-new-tab-instead-of-opening-the-google-account-signup-page",
-      "featureTitle": "Update the \"Continue with Google\" link/button on the Login/Signup screen so clicking it opens Gmail directly (https://mail.google.com) in a new tab instead of opening the Google Account signup page.",
+      "featureId": "feature-update-the-art-style-dropdown-to-match-the-provided-final-html-options-labels-render-a-select-with-id-styleselect-and-options-that-submit-these-exact-values-3d-pixar-cyberpunk-neon-pencil-sketch-renaissance-oil-and-display-option-text-as-3d-pixar-mode-cyberpunk-neon-pencil-sketch-oil-painting-respectively",
+      "featureTitle": "Update the Art Style dropdown to match the provided final HTML options/labels: render a select with id \"styleSelect\" and options that submit these exact values: \"3D Pixar\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Renaissance Oil\"; and display option text as \"3D Pixar Mode\", \"Cyberpunk Neon\", \"Pencil Sketch\", \"Oil Painting\" respectively.",
       "files": [
-        "frontend/src/screens/AuthScreen.tsx"
+        "frontend/src/components/ArtStyleSelect.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,15 +16,15 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-28"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-provide-export-the-full-project-source-code-as-a-complete-buildable-project-frontend-backend-reflecting-the-gmail-link-change",
-      "featureTitle": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
+      "featureId": "feature-update-the-generation-ui-behavior-to-match-the-provided-final-html-when-the-user-clicks-generate-my-caricature-show-inline-status-text-processing-please-wait-20s-clear-any-previously-displayed-output-image-and-hide-the-download-button-until-generation-succeeds",
+      "featureTitle": "Update the generation UI behavior to match the provided final HTML: when the user clicks \"Generate My Caricature\", show inline status text \"Processing... (Please wait ~20s)\", clear any previously displayed output image, and hide the Download button until generation succeeds.",
       "files": [
-        "frontend/README.md"
+        "frontend/src/screens/UploadPhotoScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -35,7 +35,46 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-29"
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-on-successful-generation-display-inline-status-text-success-and-show-a-download-png-button-that-downloads-the-generated-result-using-a-timestamp-based-filename-in-the-format-caricature-timestamp-png",
+      "featureTitle": "On successful generation, display inline status text \"Success!\" and show a \"Download PNG\" button that downloads the generated result using a timestamp-based filename in the format \"caricature_<timestamp>.png\".",
+      "files": [
+        "frontend/src/screens/ResultScreen.tsx",
+        "frontend/src/screens/UploadPhotoScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-on-generation-failure-display-an-inline-error-message-prefixed-with-error-in-english-in-the-status-area-and-ensure-the-download-button-remains-hidden",
+      "featureTitle": "On generation failure, display an inline error message prefixed with \"Error: \" (in English) in the status area, and ensure the Download button remains hidden.",
+      "files": [
+        "frontend/src/screens/UploadPhotoScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

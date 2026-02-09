@@ -1,40 +1,55 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T15:47:15.534Z",
-  "summary": "REQ-28 appears implemented by updating the AuthScreen \"Continue with Google\" anchor to open https://mail.google.com in a new tab with rel=\"noopener noreferrer\" preserved. REQ-29 (delivering/exporting the full buildable project source, including frontend+backend and configs) cannot be confirmed from the provided diff summary; backend delivery/config completeness is not evidenced. Several non-requested documentation/metadata files were added/modified.",
+  "generatedAt": "2026-02-09T09:23:44.821Z",
+  "summary": "REQ-1 appears implemented via ArtStyleSelect with id=\"styleSelect\" and the requested option values/labels. UploadPhotoScreen implements the requested status strings and timestamp-based PNG download logic; however, due to truncation of UploadPhotoScreen rendering, conditional visibility of the Download button (hidden until success / hidden on failure) cannot be fully confirmed from the provided diff summary. Several additional UI behaviors were added in ResultScreen that were not requested (source photo toggle, toasts, extra buttons).",
   "missing_requirements": [
     {
-      "id": "REQ-29",
-      "requirement": "Provide/export the full project source code as a complete, buildable project (frontend + backend) reflecting the Gmail-link change.",
-      "reason": "The diff summary only shows changes/additions to frontend documentation/metadata and one frontend screen. It does not provide evidence that the complete project source (including backend directory and required config files like frontend/.env.example) is included/delivered or updated as part of this change.",
+      "id": "REQ-2",
+      "requirement": "Hide the Download button until generation succeeds (and hide it on generate start).",
+      "reason": "UploadPhotoScreen sets showDownload state to false on generate start and true on success, but the diff is truncated before showing whether the Download button is actually conditionally rendered/hidden based on showDownload.",
       "evidence": [
-        "<file-diff> shows only: ADDED frontend/README.md; MODIFIED frontend/src/screens/AuthScreen.tsx, frontend-file-summaries.txt, project_state.json; no backend/ directory files shown"
+        "frontend/src/screens/UploadPhotoScreen.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Ensure the Download button remains hidden on generation failure.",
+      "reason": "UploadPhotoScreen sets showDownload to false in the failure branch, but the diff is truncated before confirming the Download button UI is actually hidden/omitted when showDownload is false.",
+      "evidence": [
+        "frontend/src/screens/UploadPhotoScreen.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Added a new frontend/README.md with extensive feature/tech-stack documentation that was not requested.",
-      "reason": "BuildRequest only asked to change the Google button link destination and to deliver the existing full project source; it did not request new documentation files.",
+      "description": "Result screen adds a toggle to show/hide the source photo (\"show source\" UI) alongside the generated caricature.",
+      "reason": "Not requested in REQ-1 to REQ-4; requirements only cover style picker, status messaging, and download behavior.",
       "evidence": [
-        "frontend/README.md"
+        "frontend/src/screens/ResultScreen.tsx"
       ]
     },
     {
-      "description": "Modified/added project metadata files (frontend-file-summaries.txt and project_state.json) containing broad feature descriptions beyond the requested Gmail link change.",
-      "reason": "These changes are not part of REQ-28 and do not contribute to changing the \"Continue with Google\" link destination; they were not requested.",
+      "description": "Result screen adds toast-based success/error notifications around download.",
+      "reason": "Not requested; requirements only specify inline status text for processing/success/error during generation, not toast notifications for downloads.",
       "evidence": [
-        "frontend-file-summaries.txt",
-        "project_state.json"
+        "frontend/src/screens/ResultScreen.tsx"
+      ]
+    },
+    {
+      "description": "Result screen includes a \"Create another\" action/button and uses generation state clearing/navigation behavior.",
+      "reason": "Not requested by REQ-1 to REQ-4 (download/status/style changes only).",
+      "evidence": [
+        "frontend/src/screens/ResultScreen.tsx"
       ]
     }
   ],
-  "confidence": 0.67,
+  "confidence": 0.68,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/README.md",
-    "frontend/src/screens/AuthScreen.tsx",
+    "frontend/src/components/ArtStyleSelect.tsx",
+    "frontend/src/screens/ResultScreen.tsx",
+    "frontend/src/screens/UploadPhotoScreen.tsx",
     "project_state.json"
   ]
 }

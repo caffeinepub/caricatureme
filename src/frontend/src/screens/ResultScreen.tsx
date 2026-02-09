@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import AppLayout from '../components/AppLayout';
 import { useI18n } from '../features/i18n/useI18n';
 import { useCaricatureGeneration } from '../features/generation/useCaricatureGeneration';
-import { downloadPng } from '../lib/downloadPng';
 import { Button } from '@/components/ui/button';
 import { cardStyles, primaryButtonStyles } from '../lib/uiStyles';
 import { toast } from 'sonner';
@@ -31,10 +30,19 @@ export default function ResultScreen({ onNavigate }: ResultScreenProps) {
   }
 
   const handleDownload = async () => {
+    if (!result.imageUrl) {
+      toast.error(t('download_error'));
+      return;
+    }
+
     setIsDownloading(true);
     try {
-      const filename = `caricature-${result.timestamp}.png`;
-      await downloadPng(result.imageUrl, filename);
+      // Use timestamp-based filename with .png extension
+      const filename = `caricature_${Date.now()}.png`;
+      const link = document.createElement('a');
+      link.href = result.imageUrl;
+      link.download = filename;
+      link.click();
       toast.success(t('download_success'));
     } catch (error) {
       toast.error(t('download_error'));
@@ -90,10 +98,10 @@ export default function ResultScreen({ onNavigate }: ResultScreenProps) {
             <Button
               onClick={handleDownload}
               className={`${primaryButtonStyles} w-full`}
-              disabled={isDownloading}
+              disabled={isDownloading || !result.imageUrl}
             >
               <Download className="mr-2 h-5 w-5" />
-              {isDownloading ? t('downloading') : t('download')}
+              {isDownloading ? t('downloading') : 'Download PNG'}
             </Button>
 
             <Button
